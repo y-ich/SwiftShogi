@@ -22,7 +22,8 @@ public enum Rank: Int, CaseIterable {
     case nine
 }
 
-public enum Square: Int, CaseIterable { // 将棋盤は右上が原点であることに注意
+public enum Square: Int, CaseIterable {
+    // 将棋盤は右上が原点なので、以下は左右反転させて見る
     case a1, b1, c1, d1, e1, f1, g1, h1, i1
     case a2, b2, c2, d2, e2, f2, g2, h2, i2
     case a3, b3, c3, d3, e3, f3, g3, h3, i3

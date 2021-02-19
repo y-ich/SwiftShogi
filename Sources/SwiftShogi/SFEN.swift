@@ -45,7 +45,7 @@ extension SFEN.Fields {
 
         var board = Board()
         for (rank, string) in zip(Rank.allCases, rankStrings) {
-            var squares = Square.cases(at: rank).makeIterator()
+            var squares = Square.cases(at: rank).reversed().makeIterator()
             var hasPrefix = false
             for character in Array(string) {
                 switch character {
