@@ -1,16 +1,4 @@
 public enum File: Int, CaseIterable {
-    case one
-    case two
-    case three
-    case four
-    case five
-    case six
-    case seven
-    case eight
-    case nine
-}
-
-public enum Rank: Int, CaseIterable {
     case a
     case b
     case c
@@ -22,16 +10,28 @@ public enum Rank: Int, CaseIterable {
     case i
 }
 
-public enum Square: Int, CaseIterable {
-    case oneA,   oneB,   oneC,   oneD,   oneE,   oneF,   oneG,   oneH,   oneI
-    case twoA,   twoB,   twoC,   twoD,   twoE,   twoF,   twoG,   twoH,   twoI
-    case threeA, threeB, threeC, threeD, threeE, threeF, threeG, threeH, threeI
-    case fourA,  fourB,  fourC,  fourD,  fourE,  fourF,  fourG,  fourH,  fourI
-    case fiveA,  fiveB,  fiveC,  fiveD,  fiveE,  fiveF,  fiveG,  fiveH,  fiveI
-    case sixA,   sixB,   sixC,   sixD,   sixE,   sixF,   sixG,   sixH,   sixI
-    case sevenA, sevenB, sevenC, sevenD, sevenE, sevenF, sevenG, sevenH, sevenI
-    case eightA, eightB, eightC, eightD, eightE, eightF, eightG, eightH, eightI
-    case nineA,  nineB,  nineC,  nineD,  nineE,  nineF,  nineG,  nineH,  nineI
+public enum Rank: Int, CaseIterable {
+    case one
+    case two
+    case three
+    case four
+    case five
+    case six
+    case seven
+    case eight
+    case nine
+}
+
+public enum Square: Int, CaseIterable { // 将棋盤は右上が原点であることに注意
+    case a1, b1, c1, d1, e1, f1, g1, h1, i1
+    case a2, b2, c2, d2, e2, f2, g2, h2, i2
+    case a3, b3, c3, d3, e3, f3, g3, h3, i3
+    case a4, b4, c4, d4, e4, f4, g4, h4, i4
+    case a5, b5, c5, d5, e5, f5, g5, h5, i5
+    case a6, b6, c6, d6, e6, f6, g6, h6, i6
+    case a7, b7, c7, d7, e7, f7, g7, h7, i7
+    case a8, b8, c8, d8, e8, f8, g8, h8, i8
+    case a9, b9, c9, d9, e9, f9, g9, h9, i9
 }
 
 extension Square {
@@ -39,14 +39,14 @@ extension Square {
         self = Self.allCases.first { $0.file == file && $0.rank == rank }!
     }
 
-    public var file: File { File(rawValue: rawValue / File.allCases.count)! }
-    public var rank: Rank { Rank(rawValue: rawValue % Rank.allCases.count)! }
+    public var file: File { File(rawValue: rawValue % File.allCases.count)! }
+    public var rank: Rank { Rank(rawValue: rawValue / File.allCases.count)! }
 
     public static func cases(at file: File) -> [Self] { allCases.filter { $0.file == file } }
     public static func cases(at rank: Rank) -> [Self] { allCases.filter { $0.rank == rank } }
 
     public static func promotableCases(for color: Color) -> [Self] {
-        let ranks: [Rank] = color.isBlack ? [.a, .b, .c] : [.g, .h, .i]
+        let ranks: [Rank] = color.isBlack ? [.one, .two, .three] : [.seven, .eight, .nine]
         return allCases.filter { ranks.contains($0.rank) }
     }
 }
