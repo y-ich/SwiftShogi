@@ -42,10 +42,10 @@ extension Direction {
 
         var shift: Int {
             switch self {
-            case .north: return -1
-            case .south: return 1
-            case .east: return -File.allCases.count
-            case .west: return File.allCases.count
+            case .north: return -File.allCases.count
+            case .south: return File.allCases.count
+            case .east: return -1
+            case .west: return 1
             }
         }
     }
