@@ -22,13 +22,16 @@ public struct Game {
 extension Game {
     /// Performs `move` with validating it.
     public mutating func perform(_ move: Move) throws {
-        try validate(move)
+        switch validate(move) {
+        case .success(()):
+            capturePieceIfNeeded(from: move.destination)
+            remove(move.piece, from: move.source)
+            insert(move.piece, to: move.destination, shouldPromote: move.shouldPromote)
 
-        capturePieceIfNeeded(from: move.destination)
-        remove(move.piece, from: move.source)
-        insert(move.piece, to: move.destination, shouldPromote: move.shouldPromote)
-
-        color.toggle()
+            color.toggle()
+        case .failure(let e):
+            throw e
+        }
     }
 
     /// An error in move validation.
@@ -46,21 +49,28 @@ extension Game {
     }
 
     /// Validates `move`.
-    public func validate(_ move: Move) throws {
-        try validateSource(move.source, piece: move.piece)
-        try validateDestination(move.destination)
+    public func validate(_ move: Move) -> Result<Void, MoveValidationError> {
+        var result = validateSource(move.source, piece: move.piece)
+        result = result.flatMap {
+            validateDestination(move.destination)
+        }
         if move.shouldPromote {
-            try validatePromotion(
+            result = result.flatMap {
+                validatePromotion(
+                    source: move.source,
+                    destination: move.destination,
+                    piece: move.piece
+                )
+            }
+        }
+        result = result.flatMap {
+            validateAttack(
                 source: move.source,
                 destination: move.destination,
                 piece: move.piece
             )
         }
-        try validateAttack(
-            source: move.source,
-            destination: move.destination,
-            piece: move.piece
-        )
+        return result
     }
 
     /// Returns the valid moves for the current color.
@@ -121,75 +131,79 @@ private extension Game {
         }
     }
 
-    func validateSource(_ source: Move.Source, piece: Piece) throws {
+    func validateSource(_ source: Move.Source, piece: Piece) -> Result<Void, MoveValidationError> {
         switch source {
         case let .board(square):
             guard board[square] == piece else {
-                throw MoveValidationError.boardPieceDoesNotExist
+                return .failure(MoveValidationError.boardPieceDoesNotExist)
             }
         case .capturedPiece:
             guard capturedPieces.contains(piece) else {
-                throw MoveValidationError.capturedPieceDoesNotExist
+                return .failure(MoveValidationError.capturedPieceDoesNotExist)
             }
         }
 
         guard piece.color == color else {
-            throw MoveValidationError.invalidPieceColor
+            return .failure(MoveValidationError.invalidPieceColor)
         }
+        return .success(())
     }
 
-    func validateDestination(_ destination: Move.Destination) throws {
+    func validateDestination(_ destination: Move.Destination) -> Result<Void, MoveValidationError> {
         switch destination {
         case let .board(square):
             // If a piece at the destination does not exist, no validation is required
-            guard let piece = board[square] else { return }
+            guard let piece = board[square] else { return .success(()) }
 
             guard piece.color != color else {
-                throw MoveValidationError.friendlyPieceAlreadyExists
+                return .failure(MoveValidationError.friendlyPieceAlreadyExists)
             }
+            return .success(())
         }
     }
 
-    func validatePromotion(source: Move.Source, destination: Move.Destination, piece: Piece) throws {
+    func validatePromotion(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
         guard !piece.isPromoted else {
-            throw MoveValidationError.pieceAlreadyPromoted
+            return .failure(MoveValidationError.pieceAlreadyPromoted)
         }
         guard piece.canPromote else {
-            throw MoveValidationError.pieceCannotPromote
+            return .failure(MoveValidationError.pieceCannotPromote)
         }
 
         switch (source, destination) {
         case let (.board(sourceSquare), .board(destinationSquare)):
             let squares = Square.promotableCases(for: color)
             guard squares.contains(where: { $0 == sourceSquare || $0 == destinationSquare }) else {
-                throw MoveValidationError.illegalBoardPiecePromotion
+                return .failure(MoveValidationError.illegalBoardPiecePromotion)
             }
         case (.capturedPiece, _):
-            throw MoveValidationError.illegalCapturedPiecePromotion
+            return .failure(MoveValidationError.illegalCapturedPiecePromotion)
         }
+        return .success(())
     }
 
-    func validateAttack(source: Move.Source, destination: Move.Destination, piece: Piece) throws {
+    func validateAttack(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
         switch (source, destination, piece) {
         case let (.board(sourceSquare), .board(destinationSquare), _):
             guard board.isAttackable(from: sourceSquare, to: destinationSquare) else {
-                throw MoveValidationError.illegalAttack
+                return .failure(MoveValidationError.illegalAttack)
             }
             guard !board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) else {
-                throw MoveValidationError.kingPieceIsChecked
+                return .failure(MoveValidationError.kingPieceIsChecked)
             }
         case let (.capturedPiece, .board(destinationSquare), piece):
             guard !board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) else {
-                throw MoveValidationError.kingPieceIsChecked
+                return .failure(MoveValidationError.kingPieceIsChecked)
             }
         }
+        return .success(())
     }
 
     func isValid(for move: Move) -> Bool {
-        do {
-            try validate(move)
+        switch validate(move) {
+        case .success(()):
             return true
-        } catch {
+        case .failure(_):
             return false
         }
     }
