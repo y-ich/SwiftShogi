@@ -50,20 +50,20 @@ extension Direction {
         }
     }
 
-    var components: [Component] {
-        switch self {
-        case .north: return [.north]
-        case .south: return [.south]
-        case .east: return [.east]
-        case .west: return [.west]
-        case .northEast: return [.north, .east]
-        case .northWest: return [.north, .west]
-        case .southEast: return [.south, .east]
-        case .southWest: return [.south, .west]
-        case .northNorthEast: return [.north, .north, .east]
-        case .northNorthWest: return [.north, .north, .west]
-        case .southSouthEast: return [.south, .south, .east]
-        case .southSouthWest: return [.south, .south, .west]
-        }
-    }
+    static let COMPONENTS: [Direction:[Component]] = [
+        .north: [.north],
+        .south: [.south],
+        .east: [.east],
+        .west: [.west],
+        .northEast: [.north, .east],
+        .northWest: [.north, .west],
+        .southEast: [.south, .east],
+        .southWest: [.south, .west],
+        .northNorthEast: [.north, .north, .east],
+        .northNorthWest: [.north, .north, .west],
+        .southSouthEast: [.south, .south, .east],
+        .southSouthWest: [.south, .south, .west]
+    ]
+
+    var components: [Component] { Self.COMPONENTS[self]! }
 }
