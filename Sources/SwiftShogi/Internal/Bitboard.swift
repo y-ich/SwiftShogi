@@ -1,6 +1,6 @@
 /// A bitmap of eighty-one bits suitable for storing squares for various pieces.
 ///
-/// The first bit refers to `Square.oneA`, and the last (81th) bit refers to `Square.nineI`.
+/// The first bit refers to `Square.a1`, and the last (81th) bit refers to `Square.i9`.
 struct Bitboard: RawRepresentable, Equatable {
     private(set) var rawValue: UInt128
 
@@ -63,16 +63,16 @@ private extension Bitboard {
     func shifted(toward direction: Direction) -> Self {
         var bitboard = self << direction.shift
         // Prevents rank changes by shifting
-        if direction.containsNorth && intersects(Self.rankA) { bitboard &= ~Self.rankI }
-        if direction.containsSouth && intersects(Self.rankI) { bitboard &= ~Self.rankA }
+        if direction.containsNorth && intersects(Self.rankOne) { bitboard &= ~Self.rankNine }
+        if direction.containsSouth && intersects(Self.rankNine) { bitboard &= ~Self.rankOne }
         return bitboard
     }
 
-    static let rankA: Bitboard
-        = Square.cases(at: .a).map(Self.init).reduce(Bitboard(rawValue: 0), |)
+    static let rankOne: Bitboard
+        = Square.cases(at: .one).map(Self.init).reduce(Bitboard(rawValue: 0), |)
 
-    static let rankI: Bitboard
-        = Square.cases(at: .i).map(Self.init).reduce(Bitboard(rawValue: 0), |)
+    static let rankNine: Bitboard
+        = Square.cases(at: .nine).map(Self.init).reduce(Bitboard(rawValue: 0), |)
 }
 
 prefix func ~ (x: Bitboard) -> Bitboard { Bitboard(rawValue: ~x.rawValue) }
