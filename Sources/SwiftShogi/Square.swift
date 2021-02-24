@@ -37,14 +37,20 @@ public enum Square: Int, CaseIterable {
 
 extension Square {
     public init(file: File, rank: Rank) {
-        self = Self.allCases.first { $0.file == file && $0.rank == rank }!
+        self.init(rawValue: rank.rawValue * File.allCases.count + file.rawValue)!
     }
 
     public var file: File { File(rawValue: rawValue % File.allCases.count)! }
     public var rank: Rank { Rank(rawValue: rawValue / File.allCases.count)! }
 
-    public static func cases(at file: File) -> [Self] { allCases.filter { $0.file == file } }
-    public static func cases(at rank: Rank) -> [Self] { allCases.filter { $0.rank == rank } }
+    public static func cases(at file: File) -> [Self] {
+        let f = file
+        return allCases.filter { $0.file == f }
+    }
+    public static func cases(at rank: Rank) -> [Self] {
+        let r = rank
+        return allCases.filter { $0.rank == r }
+    }
 
     public static func promotableCases(for color: Color) -> [Self] {
         let ranks: [Rank] = color.isBlack ? [.one, .two, .three] : [.seven, .eight, .nine]
