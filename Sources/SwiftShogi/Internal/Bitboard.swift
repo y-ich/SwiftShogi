@@ -9,7 +9,7 @@ struct Bitboard: RawRepresentable, Equatable {
     }
 
     /// A mask value to prevent exceeding the maximum value of 81-bit integer.
-    private static let maskValue = UInt128(upperBits: 0x1ffff, lowerBits: 0xffffffffffffffff)
+    fileprivate static let maskValue = UInt128(upperBits: 0x1ffff, lowerBits: 0xffffffffffffffff)
 }
 
 extension Bitboard {
@@ -61,11 +61,7 @@ private extension Bitboard {
     }
 
     func shifted(toward direction: Direction) -> Self {
-        var bitboard = self << direction.shift
-        // Prevents rank changes by shifting
-        if direction.containsNorth && intersects(Self.rankOne) { bitboard &= ~Self.rankNine }
-        if direction.containsSouth && intersects(Self.rankNine) { bitboard &= ~Self.rankOne }
-        return bitboard
+        return self << direction.shift
     }
 
     static let rankOne: Bitboard
@@ -80,4 +76,4 @@ func & (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawVa
 func &= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs & rhs }
 func | (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawValue | rhs.rawValue) }
 func |= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs | rhs }
-func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: lhs.rawValue << rhs) }
+func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: (lhs.rawValue << rhs) & Bitboard.maskValue) }
