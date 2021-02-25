@@ -5,31 +5,31 @@ final class BoardTests: XCTestCase {
     func testSubscript() {
         let piece = Piece(kind: .gold, color: .black)
         var board = Board()
-        XCTAssertNil(board[.oneA])
+        XCTAssertNil(board[.a1])
 
-        board[.oneA] = piece
-        XCTAssertEqual(board[.oneA], piece)
+        board[.a1] = piece
+        XCTAssertEqual(board[.a1], piece)
 
-        board[.oneA] = nil
-        XCTAssertNil(board[.oneA])
+        board[.a1] = nil
+        XCTAssertNil(board[.a1])
     }
 
     func testIsAttackable() {
         let piece = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.oneA] = piece
+        board[.a1] = piece
 
-        XCTAssertTrue(board.isAttackable(from: .oneA, to: .oneB))
-        XCTAssertFalse(board.isAttackable(from: .oneA, to: .oneC))
-        XCTAssertFalse(board.isAttackable(from: .oneB, to: .oneC))
+        XCTAssertTrue(board.isAttackable(from: .a1, to: .b1))
+        XCTAssertFalse(board.isAttackable(from: .a1, to: .c1))
+        XCTAssertFalse(board.isAttackable(from: .b1, to: .c1))
     }
 
     func testAttackableSquaresFromSquare() {
         let piece = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.oneA] = piece
+        board[.a1] = piece
 
-        XCTAssertEqual(board.attackableSuqares(from: .oneA), [.oneB, .twoA])
+        XCTAssertEqual(board.attackableSuqares(from: .a1), [.b1, .a2])
     }
 
     func testAttackableSquaresToSquare() {
@@ -37,12 +37,12 @@ final class BoardTests: XCTestCase {
         let piece2 = Piece(kind: .gold, color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.oneA] = piece1
-        board[.oneB] = piece2
-        board[.oneC] = piece3
+        board[.a1] = piece1
+        board[.a2] = piece2
+        board[.a3] = piece3
 
-        XCTAssertEqual(board.attackableSquares(to: .twoB), [.oneB, .oneC])
-        XCTAssertEqual(board.attackableSquares(to: .twoB, for: .black), [.oneC])
+        XCTAssertEqual(board.attackableSquares(to: .b2), [.a2, .a3])
+        XCTAssertEqual(board.attackableSquares(to: .b2, for: .black), [.a3])
     }
 
     func testOccupiedSquares() {
@@ -50,25 +50,25 @@ final class BoardTests: XCTestCase {
         let piece2 = Piece(kind: .gold, color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.oneA] = piece1
-        board[.oneB] = piece2
-        board[.oneC] = piece3
+        board[.a1] = piece1
+        board[.b1] = piece2
+        board[.c1] = piece3
 
-        XCTAssertEqual(board.occupiedSquares(), [.oneA, .oneB, .oneC])
-        XCTAssertEqual(board.occupiedSquares(for: .black), [.oneA, .oneC])
+        XCTAssertEqual(board.occupiedSquares(), [.a1, .b1, .c1])
+        XCTAssertEqual(board.occupiedSquares(for: .black), [.a1, .c1])
     }
 
     func testEmptySquares() {
         var board = Board()
 
         XCTAssertEqual(board.emptySquares.count, 81)
-        XCTAssertTrue(board.emptySquares.contains(.oneA))
+        XCTAssertTrue(board.emptySquares.contains(.a1))
 
         let piece = Piece(kind: .gold, color: .black)
-        board[.oneA] = piece
+        board[.a1] = piece
 
         XCTAssertEqual(board.emptySquares.count, 80)
-        XCTAssertFalse(board.emptySquares.contains(.oneA))
+        XCTAssertFalse(board.emptySquares.contains(.a1))
     }
 
     func testIsKingChecked() {
@@ -76,9 +76,9 @@ final class BoardTests: XCTestCase {
         let piece2 = Piece(kind: .king, color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.fiveI] = piece1
-        board[.fiveA] = piece2
-        board[.fiveB] = piece3
+        board[.e9] = piece1
+        board[.e1] = piece2
+        board[.e2] = piece3
 
         XCTAssertFalse(board.isKingChecked(for: .black))
         XCTAssertTrue(board.isKingChecked(for: .white))
@@ -89,12 +89,12 @@ final class BoardTests: XCTestCase {
         let piece2 = Piece(kind: .lance(.normal), color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.fiveI] = piece1
-        board[.fiveA] = piece2
-        board[.fiveH] = piece3
+        board[.e9] = piece1
+        board[.e1] = piece2
+        board[.e8] = piece3
 
-        XCTAssertFalse(board.isKingCheckedByMovingPiece(from: .fiveH, to: .fiveG, for: .black))
-        XCTAssertTrue(board.isKingCheckedByMovingPiece(from: .fiveH, to: .fourH, for: .black))
+        XCTAssertFalse(board.isKingCheckedByMovingPiece(from: .e8, to: .e7, for: .black))
+        XCTAssertTrue(board.isKingCheckedByMovingPiece(from: .e8, to: .d8, for: .black))
     }
 
     func testIsKingCheckedByMovingPiece() {
@@ -102,10 +102,10 @@ final class BoardTests: XCTestCase {
         let piece2 = Piece(kind: .lance(.normal), color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         var board = Board()
-        board[.fiveI] = piece1
-        board[.fiveA] = piece2
+        board[.e9] = piece1
+        board[.e1] = piece2
 
-        XCTAssertFalse(board.isKingCheckedByMovingPiece(piece3, to: .fiveG, for: .black))
-        XCTAssertTrue(board.isKingCheckedByMovingPiece(piece3, to: .fourH, for: .black))
+        XCTAssertFalse(board.isKingCheckedByMovingPiece(piece3, to: .e7, for: .black))
+        XCTAssertTrue(board.isKingCheckedByMovingPiece(piece3, to: .d8, for: .black))
     }
 }

@@ -5,30 +5,30 @@ final class GameTests: XCTestCase {
     func testInitializerWithSFEN() {
         let sfen = SFEN(string: "4k4/9/9/9/9/9/9/9/4K4 w G")!
         let game = Game(sfen: sfen)
-        XCTAssertEqual(game.board[.fiveA], Piece(kind: .king, color: .white))
-        XCTAssertEqual(game.board[.fiveI], Piece(kind: .king, color: .black))
+        XCTAssertEqual(game.board[.e1], Piece(kind: .king, color: .white))
+        XCTAssertEqual(game.board[.e9], Piece(kind: .king, color: .black))
         XCTAssertEqual(game.color, .white)
         XCTAssertEqual(game.capturedPieces, [Piece(kind: .gold, color: .black)])
     }
 
     func testPerformFromBoard() {
         let piece = Piece(kind: .gold, color: .black)
-        let board = Board(pieces: [.oneA: piece])
+        let board = Board(pieces: [.a1: piece])
         var game = Game(board: board)
-        XCTAssertEqual(game.board[.oneA], piece)
-        XCTAssertNil(game.board[.oneB])
+        XCTAssertEqual(game.board[.a1], piece)
+        XCTAssertNil(game.board[.b1])
         XCTAssertEqual(game.color, .black)
         XCTAssertTrue(game.capturedPieces.isEmpty)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece
         )
         XCTAssertNoThrow(try game.perform(move))
 
-        XCTAssertNil(game.board[.oneA])
-        XCTAssertEqual(game.board[.oneB], piece)
+        XCTAssertNil(game.board[.a1])
+        XCTAssertEqual(game.board[.b1], piece)
         XCTAssertEqual(game.color, .white)
         XCTAssertTrue(game.capturedPieces.isEmpty)
     }
@@ -36,18 +36,18 @@ final class GameTests: XCTestCase {
     func testPerformFromCapturedPiece() {
         let piece = Piece(kind: .gold, color: .black)
         var game = Game(capturedPieces: [piece])
-        XCTAssertNil(game.board[.oneA])
+        XCTAssertNil(game.board[.a1])
         XCTAssertEqual(game.color, .black)
         XCTAssertTrue(game.capturedPieces.contains(piece))
 
         let move = Move(
             source: .capturedPiece,
-            destination: .board(.oneA),
+            destination: .board(.a1),
             piece: piece
         )
         XCTAssertNoThrow(try game.perform(move))
 
-        XCTAssertEqual(game.board[.oneA], piece)
+        XCTAssertEqual(game.board[.a1], piece)
         XCTAssertEqual(game.color, .white)
         XCTAssertTrue(game.capturedPieces.isEmpty)
     }
@@ -57,47 +57,47 @@ final class GameTests: XCTestCase {
         let piece2 = Piece(kind: .rook(.promoted), color: .white)
         let piece3 = Piece(kind: .pawn(.normal), color: .black)
         let piece4 = Piece(kind: .gold, color: .white)
-        let board = Board(pieces: [.oneA: piece1, .oneB: piece2])
+        let board = Board(pieces: [.a1: piece1, .b1: piece2])
         var game = Game(board: board, capturedPieces: [piece3, piece4])
-        XCTAssertEqual(game.board[.oneA], piece1)
-        XCTAssertEqual(game.board[.oneB], piece2)
+        XCTAssertEqual(game.board[.a1], piece1)
+        XCTAssertEqual(game.board[.b1], piece2)
         XCTAssertEqual(game.color, .black)
         XCTAssertEqual(game.capturedPieces, [piece3, piece4])
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece1
         )
         XCTAssertNoThrow(try game.perform(move))
 
         let expected = Piece(kind: .rook(.normal), color: .black)
-        XCTAssertNil(game.board[.nineA])
-        XCTAssertEqual(game.board[.oneB], piece1)
+        XCTAssertNil(game.board[.a9])
+        XCTAssertEqual(game.board[.b1], piece1)
         XCTAssertEqual(game.color, .white)
         XCTAssertEqual(game.capturedPieces, [expected, piece3, piece4])
     }
 
     func testPerformWithPromotingPiece() {
         let piece = Piece(kind: .rook(.normal), color: .black)
-        let board = Board(pieces: [.oneA: piece])
+        let board = Board(pieces: [.a1: piece])
         var game = Game(board: board)
-        XCTAssertEqual(game.board[.oneA], piece)
-        XCTAssertNil(game.board[.oneB])
+        XCTAssertEqual(game.board[.a1], piece)
+        XCTAssertNil(game.board[.b1])
         XCTAssertEqual(game.color, .black)
         XCTAssertTrue(game.capturedPieces.isEmpty)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece,
             shouldPromote: true
         )
         XCTAssertNoThrow(try game.perform(move))
 
         let expectedPiece = Piece(kind: .rook(.promoted), color: .black)
-        XCTAssertNil(game.board[.oneA])
-        XCTAssertEqual(game.board[.oneB], expectedPiece)
+        XCTAssertNil(game.board[.a1])
+        XCTAssertEqual(game.board[.b1], expectedPiece)
         XCTAssertEqual(game.color, .white)
         XCTAssertTrue(game.capturedPieces.isEmpty)
     }
@@ -108,12 +108,15 @@ final class GameTests: XCTestCase {
         let game = Game(board: board)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .boardPieceDoesNotExist)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.boardPieceDoesNotExist)
         }
     }
 
@@ -123,57 +126,69 @@ final class GameTests: XCTestCase {
 
         let move = Move(
             source: .capturedPiece,
-            destination: .board(.oneA),
+            destination: .board(.a1),
             piece: piece
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .capturedPieceDoesNotExist)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.capturedPieceDoesNotExist)
         }
     }
 
     func testValidateWithInvalidPieceColorMoveValidationError() {
         let piece = Piece(kind: .gold, color: .black)
-        let board = Board(pieces: [.oneA: piece])
+        let board = Board(pieces: [.a1: piece])
         let game = Game(board: board, color: .white)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .invalidPieceColor)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.invalidPieceColor)
         }
     }
 
     func testValidateWithFriendlyPieceAlreadyExistsMoveValidationError() {
         let piece1 = Piece(kind: .gold, color: .black)
         let piece2 = Piece(kind: .king, color: .black)
-        let board = Board(pieces: [.oneA: piece1, .oneB: piece2])
+        let board = Board(pieces: [.a1: piece1, .b1: piece2])
         let game = Game(board: board)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece1
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .friendlyPieceAlreadyExists)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.friendlyPieceAlreadyExists)
         }
     }
 
     func testValidateWithIllegalAttackMoveValidationError() {
         let piece = Piece(kind: .gold, color: .black)
-        let board = Board(pieces: [.oneA: piece])
+        let board = Board(pieces: [.a1: piece])
         let game = Game(board: board)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneI),
+            source: .board(.a1),
+            destination: .board(.i1),
             piece: piece
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .illegalAttack)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.illegalAttack)
         }
     }
 
@@ -181,74 +196,86 @@ final class GameTests: XCTestCase {
         let piece1 = Piece(kind: .king, color: .black)
         let piece2 = Piece(kind: .lance(.normal), color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
-        let board = Board(pieces: [.fiveI: piece1, .fiveA: piece2])
+        let board = Board(pieces: [.e9: piece1, .e1: piece2])
 
         let moves: [Move] = [
             Move(
-                source: .board(.fiveI),
-                destination: .board(.fiveH),
+                source: .board(.e9),
+                destination: .board(.e8),
                 piece: piece1
             ),
             Move(
                 source: .capturedPiece,
-                destination: .board(.oneA),
+                destination: .board(.a1),
                 piece: piece3
             )
         ]
         try! moves.forEach { move in
             let game = Game(board: board, capturedPieces: [piece3])
 
-            XCTAssertThrowsError(try game.validate(move)) { error in
-                XCTAssertEqual(error as! Game.MoveValidationError, .kingPieceIsChecked)
+            switch game.validate(move) {
+            case .success(()):
+                XCTFail()
+            case .failure(let error):
+                XCTAssertEqual(error, Game.MoveValidationError.kingPieceIsChecked)
             }
         }
     }
 
     func testValidateWithPieceAlreadyPromotedMoveValidationError() {
         let piece = Piece(kind: .rook(.promoted), color: .black)
-        let board = Board(pieces: [.oneA: piece])
+        let board = Board(pieces: [.a1: piece])
         let game = Game(board: board)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece,
             shouldPromote: true
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .pieceAlreadyPromoted)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.pieceAlreadyPromoted)
         }
     }
 
     func testValidateWithPieceCannotPromoteMoveValidationError() {
         let piece = Piece(kind: .gold, color: .black)
-        let board = Board(pieces: [.oneA: piece])
+        let board = Board(pieces: [.a1: piece])
         let game = Game(board: board)
 
         let move = Move(
-            source: .board(.oneA),
-            destination: .board(.oneB),
+            source: .board(.a1),
+            destination: .board(.b1),
             piece: piece,
             shouldPromote: true
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .pieceCannotPromote)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.pieceCannotPromote)
         }
     }
 
     func testValidateWithIllegalBoardPiecePromotionMoveValidationError() {
         let piece = Piece(kind: .rook(.normal), color: .black)
-        let board = Board(pieces: [.oneI: piece])
+        let board = Board(pieces: [.a9: piece])
         let game = Game(board: board)
 
         let move = Move(
-            source: .board(.oneI),
-            destination: .board(.oneH),
+            source: .board(.a9),
+            destination: .board(.a8),
             piece: piece,
             shouldPromote: true
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .illegalBoardPiecePromotion)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.illegalBoardPiecePromotion)
         }
     }
 
@@ -258,12 +285,15 @@ final class GameTests: XCTestCase {
 
         let move = Move(
             source: .capturedPiece,
-            destination: .board(.oneA),
+            destination: .board(.a1),
             piece: piece,
             shouldPromote: true
         )
-        XCTAssertThrowsError(try game.validate(move)) { error in
-            XCTAssertEqual(error as! Game.MoveValidationError, .illegalCapturedPiecePromotion)
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.illegalCapturedPiecePromotion)
         }
     }
 
@@ -272,29 +302,29 @@ final class GameTests: XCTestCase {
         let piece2 = Piece(kind: .silver(.normal), color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         let piece4 = Piece(kind: .gold, color: .white)
-        let board = Board(pieces: [.fiveI: piece1, .fiveA: piece2])
+        let board = Board(pieces: [.e9: piece1, .e1: piece2])
         let game = Game(board: board, capturedPieces: [piece3, piece4])
 
         let expectedFromBoard: [Move] = [
-            .fourH, .fiveH, .sixH
+            .d8, .e8, .f8
         ].map {
             Move(
-                source: .board(.fiveI),
+                source: .board(.e9),
                 destination: .board($0),
                 piece: piece1,
                 shouldPromote: false
             )
         }
         let expectedFromCapturedPiece: [Move] = [
-            .oneA,   .oneB,   .oneC,   .oneD,   .oneE,   .oneF,   .oneG,   .oneH,   .oneI,
-            .twoA,   .twoB,   .twoC,   .twoD,   .twoE,   .twoF,   .twoG,   .twoH,   .twoI,
-            .threeA, .threeB, .threeC, .threeD, .threeE, .threeF, .threeG, .threeH, .threeI,
-            .fourA,  .fourB,  .fourC,  .fourD,  .fourE,  .fourF,  .fourG,  .fourH,  .fourI,
-            .fiveB,  .fiveC,  .fiveD,  .fiveE,  .fiveF,  .fiveG,  .fiveH,
-            .sixA,   .sixB,   .sixC,   .sixD,   .sixE,   .sixF,   .sixG,   .sixH,   .sixI,
-            .sevenA, .sevenB, .sevenC, .sevenD, .sevenE, .sevenF, .sevenG, .sevenH, .sevenI,
-            .eightA, .eightB, .eightC, .eightD, .eightE, .eightF, .eightG, .eightH, .eightI,
-            .nineA,  .nineB,  .nineC,  .nineD,  .nineE,  .nineF,  .nineG,  .nineH,  .nineI,
+            .a1, .b1, .c1, .d1,      .f1, .g1, .h1, .i1,
+            .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2, .i2,
+            .a3, .b3, .c3, .d3, .e3, .f3, .g3, .h3, .i3,
+            .a4, .b4, .c4, .d4, .e4, .f4, .g4, .h4, .i4,
+            .a5, .b5, .c5, .d5, .e5, .f5, .g5, .h5, .i5,
+            .a6, .b6, .c6, .d6, .e6, .f6, .g6, .h6, .i6,
+            .a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7, .i7,
+            .a8, .b8, .c8, .d8, .e8, .f8, .g8, .h8, .i8,
+            .a9, .b9, .c9, .d9,      .f9, .g9, .h9, .i9,
         ].map {
             Move(
                 source: .capturedPiece,
@@ -311,31 +341,31 @@ final class GameTests: XCTestCase {
         let piece2 = Piece(kind: .silver(.normal), color: .white)
         let piece3 = Piece(kind: .gold, color: .black)
         let piece4 = Piece(kind: .gold, color: .white)
-        let board = Board(pieces: [.fiveI: piece1, .fiveA: piece2])
+        let board = Board(pieces: [.e9: piece1, .e1: piece2])
         let game = Game(board: board, capturedPieces: [piece3, piece4])
 
         let expectedFromBoard: [Move] = [
-            .fourH, .fiveH, .sixH
+            .d8, .e8, .f8
         ].map {
             Move(
-                source: .board(.fiveI),
+                source: .board(.e9),
                 destination: .board($0),
                 piece: piece1,
                 shouldPromote: false
             )
         }
-        XCTAssertEqual(game.validMoves(from: .board(.fiveI), piece: piece1), expectedFromBoard)
+        XCTAssertEqual(game.validMoves(from: .board(.e9), piece: piece1), expectedFromBoard)
 
         let expectedFromCapturedPiece: [Move] = [
-            .oneA,   .oneB,   .oneC,   .oneD,   .oneE,   .oneF,   .oneG,   .oneH,   .oneI,
-            .twoA,   .twoB,   .twoC,   .twoD,   .twoE,   .twoF,   .twoG,   .twoH,   .twoI,
-            .threeA, .threeB, .threeC, .threeD, .threeE, .threeF, .threeG, .threeH, .threeI,
-            .fourA,  .fourB,  .fourC,  .fourD,  .fourE,  .fourF,  .fourG,  .fourH,  .fourI,
-            .fiveB,  .fiveC,  .fiveD,  .fiveE,  .fiveF,  .fiveG,  .fiveH,
-            .sixA,   .sixB,   .sixC,   .sixD,   .sixE,   .sixF,   .sixG,   .sixH,   .sixI,
-            .sevenA, .sevenB, .sevenC, .sevenD, .sevenE, .sevenF, .sevenG, .sevenH, .sevenI,
-            .eightA, .eightB, .eightC, .eightD, .eightE, .eightF, .eightG, .eightH, .eightI,
-            .nineA,  .nineB,  .nineC,  .nineD,  .nineE,  .nineF,  .nineG,  .nineH,  .nineI,
+            .a1, .b1, .c1, .d1,      .f1, .g1, .h1, .i1,
+            .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2, .i2,
+            .a3, .b3, .c3, .d3, .e3, .f3, .g3, .h3, .i3,
+            .a4, .b4, .c4, .d4, .e4, .f4, .g4, .h4, .i4,
+            .a5, .b5, .c5, .d5, .e5, .f5, .g5, .h5, .i5,
+            .a6, .b6, .c6, .d6, .e6, .f6, .g6, .h6, .i6,
+            .a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7, .i7,
+            .a8, .b8, .c8, .d8, .e8, .f8, .g8, .h8, .i8,
+            .a9, .b9, .c9, .d9,      .f9, .g9, .h9, .i9,
         ].map {
             Move(
                 source: .capturedPiece,

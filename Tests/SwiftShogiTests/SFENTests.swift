@@ -6,8 +6,8 @@ final class SFENTests: XCTestCase {
         XCTAssertNil(SFEN(string: "4k4/9/9/9/9/9/9/9/4K4"))
 
         let sfen = SFEN(string: "4k4/9/9/9/9/9/9/9/4K4 w G")!
-        XCTAssertEqual(sfen.board[.fiveA], Piece(kind: .king, color: .white))
-        XCTAssertEqual(sfen.board[.fiveI], Piece(kind: .king, color: .black))
+        XCTAssertEqual(sfen.board[.e1], Piece(kind: .king, color: .white))
+        XCTAssertEqual(sfen.board[.e9], Piece(kind: .king, color: .black))
         XCTAssertEqual(sfen.color, .white)
         XCTAssertEqual(sfen.capturedPieces, [Piece(kind: .gold, color: .black)])
     }
@@ -18,11 +18,11 @@ final class SFENComponentsTests: XCTestCase {
         var fields: SFEN.Fields
 
         fields = SFEN.Fields(boardString: "4k4/9/9/9/9/9/9/9/4K4")!
-        XCTAssertEqual(fields.board![.fiveA], Piece(kind: .king, color: .white))
-        XCTAssertEqual(fields.board![.fiveI], Piece(kind: .king, color: .black))
+        XCTAssertEqual(fields.board![.e1], Piece(kind: .king, color: .white))
+        XCTAssertEqual(fields.board![.e9], Piece(kind: .king, color: .black))
 
         fields = SFEN.Fields(boardString: "9/9/9/9/9/9/9/9/4+R4")!
-        XCTAssertEqual(fields.board![.fiveI], Piece(kind: .rook(.promoted), color: .black))
+        XCTAssertEqual(fields.board![.e9], Piece(kind: .rook(.promoted), color: .black))
 
         let strings: [(string: String, expected: Board?)] = [
             ("9", nil),

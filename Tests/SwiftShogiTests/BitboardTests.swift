@@ -14,23 +14,23 @@ final class BitboardTests: XCTestCase {
             0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 1,
         ])
-        XCTAssertEqual(bitboard.squares, [.oneA, .nineI])
+        XCTAssertEqual(bitboard.squares, [.a1, .i9])
     }
 
     func testSubscript() {
         var bitboard = Bitboard(rawValue: 0)
-        XCTAssertFalse(bitboard[.oneA])
+        XCTAssertFalse(bitboard[.a1])
 
-        bitboard[.oneA] = true
-        XCTAssertTrue(bitboard[.oneA])
+        bitboard[.a1] = true
+        XCTAssertTrue(bitboard[.a1])
 
-        bitboard[.oneA] = false
-        XCTAssertFalse(bitboard[.oneA])
+        bitboard[.a1] = false
+        XCTAssertFalse(bitboard[.a1])
     }
 
     func testAttacks() {
         let piece = Piece(kind: .rook(.promoted), color: .black)
-        let square = Square.fiveE
+        let square = Square.e5
         let stoppers = Bitboard(rawValue: 0)
         let attacks = Bitboard.attacks(from: square, piece: piece, stoppers: stoppers)
 
@@ -50,7 +50,7 @@ final class BitboardTests: XCTestCase {
 
     func testAttacksWithStoppers() {
         let piece = Piece(kind: .rook(.promoted), color: .black)
-        let square = Square.fiveE
+        let square = Square.e5
         let stoppers = Bitboard(bits: [
             0, 0, 0, 0, 1, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0,

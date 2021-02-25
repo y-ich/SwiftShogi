@@ -23,18 +23,18 @@ final class DirectionTests: XCTestCase {
 
     func testShift() {
         let directions: [(direction: Direction, expected: Int)] = [
-            (.north, -1),
-            (.south, 1),
-            (.east, -9),
-            (.west, 9),
+            (.north, -9),
+            (.south, 9),
+            (.east, -1),
+            (.west, 1),
             (.northEast, -10),
-            (.northWest, 8),
-            (.southEast, -8),
+            (.northWest, -8),
+            (.southEast, 8),
             (.southWest, 10),
-            (.northNorthEast, -11),
-            (.northNorthWest, 7),
-            (.southSouthEast, -7),
-            (.southSouthWest, 11),
+            (.northNorthEast, -19),
+            (.northNorthWest, -17),
+            (.southSouthEast, 17),
+            (.southSouthWest, 19),
         ]
         directions.forEach {
             XCTAssertEqual($0.direction.shift, $0.expected)

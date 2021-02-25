@@ -9,7 +9,7 @@ struct Bitboard: RawRepresentable, Equatable {
     }
 
     /// A mask value to prevent exceeding the maximum value of 81-bit integer.
-    fileprivate static let maskValue = UInt128(upperBits: 0x1ffff, lowerBits: 0xffffffffffffffff)
+    private static let maskValue = UInt128(upperBits: 0x1ffff, lowerBits: 0xffffffffffffffff)
 }
 
 extension Bitboard {
@@ -61,14 +61,18 @@ private extension Bitboard {
     }
 
     func shifted(toward direction: Direction) -> Self {
-        return self << direction.shift
+       var bitboard = self << direction.shift
+        // Prevents rank changes by shifting
+        if direction.containsEast && intersects(Self.fileA) { bitboard &= ~Self.fileI }
+        if direction.containsWest && intersects(Self.fileI) { bitboard &= ~Self.fileA }
+        return bitboard
     }
 
-    static let rankOne: Bitboard
-        = Square.cases(at: .one).map(Self.init).reduce(Bitboard(rawValue: 0), |)
+    static let fileA: Bitboard
+        = Square.cases(at: .a).map(Self.init).reduce(Bitboard(rawValue: 0), |)
 
-    static let rankNine: Bitboard
-        = Square.cases(at: .nine).map(Self.init).reduce(Bitboard(rawValue: 0), |)
+    static let fileI: Bitboard
+        = Square.cases(at: .i).map(Self.init).reduce(Bitboard(rawValue: 0), |)
 }
 
 prefix func ~ (x: Bitboard) -> Bitboard { Bitboard(rawValue: ~x.rawValue) }
@@ -76,4 +80,4 @@ func & (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawVa
 func &= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs & rhs }
 func | (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawValue | rhs.rawValue) }
 func |= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs | rhs }
-func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: (lhs.rawValue << rhs) & Bitboard.maskValue) }
+func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: lhs.rawValue << rhs) }
