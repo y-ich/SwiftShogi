@@ -235,3 +235,11 @@ private extension Game {
         }
     }
 }
+
+extension Game: CustomStringConvertible {
+    public var description: String {
+        var result = board.description
+        result += "持駒 " + capturedPieces.map { $0.description }.joined()
+        return result
+    }
+}

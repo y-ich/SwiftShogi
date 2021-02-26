@@ -198,3 +198,8 @@ extension Piece.Kind: Comparable {
 
 extension Piece.Kind: Hashable {}
 extension Piece: Hashable {}
+extension Piece: CustomStringConvertible {
+    public var description: String {
+        return (color == .black ? " " : "v") + kind.description
+    }
+}

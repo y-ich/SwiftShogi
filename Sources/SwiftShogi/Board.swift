@@ -107,3 +107,20 @@ private extension Board {
         return pieceBitboards.values.reduce(Bitboard(rawValue: 0), |)
     }
 }
+
+extension Board: CustomStringConvertible {
+    public var description: String {
+        var result = ""
+        for rank in Rank.allCases {
+            for square in Square.cases(at: rank).reversed() {
+                if let piece = self[square] {
+                    result += piece.description
+                } else {
+                    result += "　"
+                }
+            }
+            result += "\n"
+        }
+        return result
+    }
+}
