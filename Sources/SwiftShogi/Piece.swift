@@ -191,7 +191,7 @@ extension Piece: CaseIterable {
 }
 
 extension Piece.Kind: RawRepresentable {
-    public typealias RawValue = UInt8
+    public typealias RawValue = Int
 
     public init?(rawValue: RawValue) {
         switch rawValue {
@@ -238,11 +238,30 @@ extension Piece.Kind: Comparable {
         return allCases.firstIndex(of: lhs)! < allCases.firstIndex(of: rhs)!
     }
 }
-
 extension Piece.Kind: Hashable {}
+
 extension Piece: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(kind.rawValue | (color == .black ? 0 : 0x80))
+    }
+}
+extension Piece: RawRepresentable {
+    public typealias RawValue = Int
+
+    public init?(rawValue: RawValue) {
+        let kinds = Piece.Kind.allCases.count
+        if rawValue < kinds {
+            self = Piece(kind: Kind(rawValue: rawValue)!, color: .black)
+        } else if rawValue < 2 * kinds {
+            self = Piece(kind: Kind(rawValue: rawValue - kinds)!, color: .white)
+        } else {
+            return nil
+        }
+    }
+
+    public var rawValue: RawValue {
+        let offset = color == .black ? 0 : Piece.Kind.allCases.count
+        return kind.rawValue + offset
     }
 }
 extension Piece: CustomStringConvertible {

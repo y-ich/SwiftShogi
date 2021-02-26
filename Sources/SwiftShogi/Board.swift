@@ -1,22 +1,24 @@
 /// A shogi board used to map `Square`s to `Piece`s.
 public struct Board: Equatable {
-    private var pieceBitboards: [Piece: Bitboard]
+    private var pieceBitboards = [Bitboard](repeating: Bitboard(rawValue: 0), count: Piece.allCases.count)
 
     /// Creates a shogi board.
-    public init() {
-        let piecesAndBitboards = Piece.allCases.map { ($0, Bitboard(rawValue: 0)) }
-        pieceBitboards = Dictionary(uniqueKeysWithValues: piecesAndBitboards)
-    }
+    public init() { }
 }
 
 extension Board {
     /// Gets and sets a piece at `square`.
     public subscript(square: Square) -> Piece? {
         get {
-            pieceBitboards.keys.first { exists($0, at: square) }
+            for i in pieceBitboards.indices {
+                if exists(i, at: square) {
+                    return Piece(rawValue: i)!
+                }
+            }
+            return nil
         }
         set(piece) {
-            pieceBitboards.keys.forEach { remove($0, from: square) }
+            pieceBitboards.indices.forEach { remove($0, from: square) }
             if let piece = piece {
                 insert(piece, to: square)
             }
@@ -53,7 +55,7 @@ extension Board {
     /// Returns `true` if the king for `color` is in check.
     public func isKingChecked(for color: Color) -> Bool {
         let piece = Piece(kind: .king, color: color)
-        guard let square = pieceBitboards[piece]!.squares.first else { return false }
+        guard let square = pieceBitboards[piece.rawValue].squares.first else { return false }
         return !attackableSquares(to: square, for: color.toggled()).isEmpty
     }
 
@@ -74,15 +76,27 @@ extension Board {
 
 private extension Board {
     func exists(_ piece: Piece, at square: Square) -> Bool {
-        pieceBitboards[piece]![square]
+        pieceBitboards[piece.rawValue][square]
+    }
+
+    func exists(_ pieceRawValue: Int, at square: Square) -> Bool {
+        pieceBitboards[pieceRawValue][square]
     }
 
     mutating func insert(_ piece: Piece, to square: Square) {
-        pieceBitboards[piece]![square] = true
+        pieceBitboards[piece.rawValue][square] = true
+    }
+
+    mutating func insert(_ pieceRawValue: Int, to square: Square) {
+        pieceBitboards[pieceRawValue][square] = true
     }
 
     mutating func remove(_ piece: Piece, from square: Square) {
-        pieceBitboards[piece]![square] = false
+        pieceBitboards[piece.rawValue][square] = false
+    }
+
+    mutating func remove(_ pieceRawValue: Int, from square: Square) {
+        pieceBitboards[pieceRawValue][square] = false
     }
 
     mutating func movePiece(from sourceSquare: Square, to destinationSquare: Square) {
@@ -102,9 +116,11 @@ private extension Board {
     func occupiedBitboard(for color: Color? = nil) -> Bitboard {
         var pieceBitboards = self.pieceBitboards
         if let color = color {
-            pieceBitboards = pieceBitboards.filter { piece, _ in piece.color == color }
+            let kinds = Piece.Kind.allCases.count
+            let range = color == .black ? (0..<kinds) : (kinds..<(2*kinds))
+            pieceBitboards = Array(pieceBitboards[range])
         }
-        return pieceBitboards.values.reduce(Bitboard(rawValue: 0), |)
+        return pieceBitboards.reduce(Bitboard(rawValue: 0), |)
     }
 }
 

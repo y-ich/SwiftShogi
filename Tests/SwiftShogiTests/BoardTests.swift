@@ -19,9 +19,9 @@ final class BoardTests: XCTestCase {
         var board = Board()
         board[.a1] = piece
 
-        XCTAssertTrue(board.isAttackable(from: .a1, to: .b1))
-        XCTAssertFalse(board.isAttackable(from: .a1, to: .c1))
-        XCTAssertFalse(board.isAttackable(from: .b1, to: .c1))
+        XCTAssertTrue(board.isAttackable(from: .a1, to: .a2))
+        XCTAssertFalse(board.isAttackable(from: .a1, to: .a3))
+        XCTAssertFalse(board.isAttackable(from: .a2, to: .a3))
     }
 
     func testAttackableSquaresFromSquare() {
@@ -51,11 +51,11 @@ final class BoardTests: XCTestCase {
         let piece3 = Piece(kind: .gold, color: .black)
         var board = Board()
         board[.a1] = piece1
-        board[.b1] = piece2
-        board[.c1] = piece3
+        board[.a2] = piece2
+        board[.a3] = piece3
 
-        XCTAssertEqual(board.occupiedSquares(), [.a1, .b1, .c1])
-        XCTAssertEqual(board.occupiedSquares(for: .black), [.a1, .c1])
+        XCTAssertEqual(board.occupiedSquares(), [.a1, .a2, .a3])
+        XCTAssertEqual(board.occupiedSquares(for: .black), [.a1, .a3])
     }
 
     func testEmptySquares() {
