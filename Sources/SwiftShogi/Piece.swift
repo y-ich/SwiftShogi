@@ -190,6 +190,49 @@ extension Piece: CaseIterable {
     }
 }
 
+extension Piece.Kind: RawRepresentable {
+    public typealias RawValue = UInt8
+
+    public init?(rawValue: RawValue) {
+        switch rawValue {
+        case 0: self = .pawn(.normal)
+        case 1: self = .lance(.normal)
+        case 2: self = .knight(.normal)
+        case 3: self = .silver(.normal)
+        case 4: self = .gold
+        case 5: self = .bishop(.normal)
+        case 6: self = .rook(.normal)
+        case 7: self = .king
+        case 8: self = .pawn(.promoted)
+        case 9: self = .lance(.promoted)
+        case 10: self = .knight(.promoted)
+        case 11: self = .silver(.promoted)
+        case 12: self = .bishop(.promoted)
+        case 13: self = .rook(.promoted)
+        default: return nil
+        }
+    }
+
+    public var rawValue: RawValue {
+        switch self {
+        case .pawn(.normal): return 0
+        case .lance(.normal): return 1
+        case .knight(.normal): return 2
+        case .silver(.normal): return 3
+        case .gold: return 4
+        case .bishop(.normal): return 5
+        case .rook(.normal): return 6
+        case .king: return 7
+        case .pawn(.promoted): return 8
+        case .lance(.promoted): return 9
+        case .knight(.promoted): return 10
+        case .silver(.promoted): return 11
+        case .bishop(.promoted): return 12
+        case .rook(.promoted): return 13
+        }
+    }
+}
+
 extension Piece.Kind: Comparable {
     public static func < (lhs: Piece.Kind, rhs: Piece.Kind) -> Bool {
         return allCases.firstIndex(of: lhs)! < allCases.firstIndex(of: rhs)!
@@ -197,7 +240,11 @@ extension Piece.Kind: Comparable {
 }
 
 extension Piece.Kind: Hashable {}
-extension Piece: Hashable {}
+extension Piece: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(kind.rawValue | (color == .black ? 0 : 0x80))
+    }
+}
 extension Piece: CustomStringConvertible {
     public var description: String {
         return (color == .black ? " " : "v") + kind.description
