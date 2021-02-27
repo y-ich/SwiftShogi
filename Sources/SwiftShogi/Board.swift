@@ -114,13 +114,17 @@ private extension Board {
     }
 
     func occupiedBitboard(for color: Color? = nil) -> Bitboard {
-        var pieceBitboards = self.pieceBitboards
-        if let color = color {
-            let kinds = Piece.Kind.allCases.count
-            let range = color == .black ? (0..<kinds) : (kinds..<(2*kinds))
-            pieceBitboards = Array(pieceBitboards[range])
+        let kinds = Piece.Kind.allCases.count
+        let range: Range<Int>
+        switch color {
+        case .black:
+            range = 0..<kinds
+        case .white:
+            range = kinds..<(2*kinds)
+        default:
+            range = pieceBitboards.indices
         }
-        return pieceBitboards.reduce(Bitboard(rawValue: 0), |)
+        return pieceBitboards[range].reduce(Bitboard(rawValue: 0), |)
     }
 }
 
