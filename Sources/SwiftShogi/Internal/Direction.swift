@@ -1,16 +1,16 @@
- enum Direction: CaseIterable {
-    case north
-    case south
-    case east
-    case west
-    case northEast
-    case northWest
-    case southEast
-    case southWest
-    case northNorthEast
-    case northNorthWest
-    case southSouthEast
-    case southSouthWest
+ enum Direction: Int, CaseIterable {
+    case north = -9
+    case south = 9
+    case east = -1
+    case west = 1
+    case northEast = -10
+    case northWest = -8
+    case southEast = 8
+    case southWest = 10
+    case northNorthEast = -19
+    case northNorthWest = -17
+    case southSouthEast = 17
+    case southSouthWest = 19
 }
 
 extension Direction {
@@ -29,7 +29,8 @@ extension Direction {
     var containsWest: Bool { components.contains(.west) }
 
     var shift: Int {
-        components.map({ $0.shift }).reduce(0, +)
+        //components.map({ $0.shift }).reduce(0, +)
+        rawValue
     }
  }
 
