@@ -25,8 +25,24 @@ extension Direction {
         return Self.allCases.first { $0.components == flippedComponents }!
     }
 
-    var containsEast: Bool { components.contains(.east) }
-    var containsWest: Bool { components.contains(.west) }
+    var containsEast: Bool {
+        // components.contains(.east)
+        switch self {
+        case .east, .northEast, .southEast, .northNorthEast, .southSouthEast:
+            return true
+        default:
+            return false
+        }
+    }
+    var containsWest: Bool {
+        //components.contains(.west)
+        switch self {
+        case .west, .northWest, .southWest, .northNorthWest, .southSouthWest:
+            return true
+        default:
+            return false
+        }
+    }
 
     var shift: Int {
         //components.map({ $0.shift }).reduce(0, +)
