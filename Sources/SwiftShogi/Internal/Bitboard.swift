@@ -32,7 +32,7 @@ extension Bitboard {
 
     /// An attacks bitboard for a piece.
     static func attacks(from square: Square, piece: Piece, stoppers: Bitboard) -> Self {
-        piece.attacks.map { attack in
+        piece.attacks.lazy.map { attack in
             attack.isFarReaching
                 ? Self(square: square).filled(toward: attack.direction, stoppers: stoppers)
                 : Self(square: square).shifted(toward: attack.direction)

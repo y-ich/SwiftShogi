@@ -210,7 +210,7 @@ final class GameTests: XCTestCase {
                 piece: piece3
             )
         ]
-        try! moves.forEach { move in
+        moves.forEach { move in
             let game = Game(board: board, capturedPieces: [piece3])
 
             switch game.validate(move) {

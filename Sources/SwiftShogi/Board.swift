@@ -10,12 +10,7 @@ extension Board {
     /// Gets and sets a piece at `square`.
     public subscript(square: Square) -> Piece? {
         get {
-            for i in pieceBitboards.indices {
-                if exists(i, at: square) {
-                    return Piece(rawValue: i)!
-                }
-            }
-            return nil
+            pieceBitboards.indices.first { exists($0, at: square) }.map { Piece(rawValue: $0)! }
         }
         set(piece) {
             pieceBitboards.indices.forEach { remove($0, from: square) }
