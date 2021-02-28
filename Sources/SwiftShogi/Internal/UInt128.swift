@@ -2,6 +2,7 @@ struct UInt128 {
     private(set) var upperBits: UInt64
     private(set) var lowerBits: UInt64
 
+    @inline(__always)
     prefix static func ~ (x: Self) -> Self {
         Self(
             upperBits: ~x.upperBits,
@@ -9,6 +10,7 @@ struct UInt128 {
         )
     }
 
+    @inline(__always)
     static func & (lhs: Self, rhs: Self) -> Self {
         Self(
             upperBits: lhs.upperBits & rhs.upperBits,
@@ -16,6 +18,7 @@ struct UInt128 {
         )
     }
 
+    @inline(__always)
     static func | (lhs: Self, rhs: Self) -> Self {
         Self(
             upperBits: lhs.upperBits | rhs.upperBits,
@@ -23,6 +26,7 @@ struct UInt128 {
         )
     }
 
+    @inline(__always)
     static func << (lhs: Self, rhs: Int) -> Self {
         let shift = rhs
         if shift < 0 { return lhs >> abs(shift) }
@@ -33,6 +37,7 @@ struct UInt128 {
         )
     }
 
+    @inline(__always)
     static func >> (lhs: Self, rhs: Int) -> Self {
         let shift = rhs
         if shift < 0 { return lhs << abs(shift) }
