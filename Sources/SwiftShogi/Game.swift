@@ -208,8 +208,8 @@ private extension Game {
         }
     }
 
-    var movesFromBoard: [Move] {
-        board.occupiedSquares(for: color).flatMap { boardPieceMoves(for: board[$0]!, from: $0) }
+    var movesFromBoard: LazySequence<[Move]> {
+        board.occupiedSquares(for: color).flatMap { boardPieceMoves(for: board[$0]!, from: $0) }.lazy
     }
 
     func boardPieceMoves(for piece: Piece, from square: Square) -> [Move] {

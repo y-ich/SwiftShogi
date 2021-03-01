@@ -29,7 +29,7 @@ final class BoardTests: XCTestCase {
         var board = Board()
         board[.a1] = piece
 
-        XCTAssertEqual(board.attackableSuqares(from: .a1), [.b1, .a2])
+        XCTAssertEqual(Array(board.attackableSuqares(from: .a1)), [.b1, .a2])
     }
 
     func testAttackableSquaresToSquare() {
@@ -54,8 +54,8 @@ final class BoardTests: XCTestCase {
         board[.b1] = piece2
         board[.c1] = piece3
 
-        XCTAssertEqual(board.occupiedSquares(), [.a1, .b1, .c1])
-        XCTAssertEqual(board.occupiedSquares(for: .black), [.a1, .c1])
+        XCTAssertEqual(Array(board.occupiedSquares()), [.a1, .b1, .c1])
+        XCTAssertEqual(Array(board.occupiedSquares(for: .black)), [.a1, .c1])
     }
 
     func testEmptySquares() {
