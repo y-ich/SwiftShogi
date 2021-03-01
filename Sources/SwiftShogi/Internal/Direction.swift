@@ -29,7 +29,7 @@ extension Direction {
     var containsWest: Bool { components.contains(.west) }
 
     var shift: Int {
-        components.map({ $0.shift }).reduce(0, +)
+        components.lazy.map({ $0.shift }).reduce(0, +)
     }
  }
 
