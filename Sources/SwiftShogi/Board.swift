@@ -26,7 +26,7 @@ extension Board {
     }
 
     /// Returns the attackable squares from `square`.
-    public func attackableSuqares(from square: Square) -> [Square] {
+    public func attackableSuqares(from square: Square) -> LazySequence<[Square]> {
         attacksBitboard(from: square).squares
     }
 
@@ -38,12 +38,12 @@ extension Board {
     }
 
     /// Returns the occupied squares corresponding to `color`.
-    public func occupiedSquares(for color: Color? = nil) -> [Square] {
+    public func occupiedSquares(for color: Color? = nil) -> LazySequence<[Square]> {
         occupiedBitboard(for: color).squares
     }
 
     /// Returns the empty squares.
-    public var emptySquares: [Square] {
+    public var emptySquares: LazySequence<[Square]> {
         (~occupiedBitboard()).squares
     }
 
