@@ -49,7 +49,7 @@ extension Game {
     }
 
     /// Validates `move`.
-    public func validate(_ move: Move) -> Result<Void, MoveValidationError> {
+    public func validate(_ move: Move, doesValidateAttack: Bool = true) -> Result<Void, MoveValidationError> {
         var result = validateSource(move.source, piece: move.piece)
         result = result.flatMap {
             validateDestination(move.destination)
@@ -63,19 +63,21 @@ extension Game {
                 )
             }
         }
-        result = result.flatMap {
-            validateAttack(
-                source: move.source,
-                destination: move.destination,
-                piece: move.piece
-            )
+        if doesValidateAttack {
+            result = result.flatMap {
+                validateAttack(
+                    source: move.source,
+                    destination: move.destination,
+                    piece: move.piece
+                )
+            }
         }
         return result
     }
 
     /// Returns the valid moves for the current color.
-    public func validMoves() -> [Move] {
-        (movesFromBoard + movesFromCapturedPieces).filter(isValid)
+    public func validMoves(doesValidateAttack: Bool = true) -> [Move] {
+        (movesFromBoard + movesFromCapturedPieces).filter { isValid(for: $0, doesValidateAttack: doesValidateAttack) }
     }
 
     /// Returns the valid moves of `piece` from `source`.
@@ -88,7 +90,7 @@ extension Game {
                 return capturedPieceMoves(for: piece)
             }
         }()
-        return moves.filter(isValid)
+        return moves.filter { isValid(for: $0) }
     }
 }
 
@@ -199,8 +201,8 @@ private extension Game {
         return .success(())
     }
 
-    func isValid(for move: Move) -> Bool {
-        switch validate(move) {
+    func isValid(for move: Move, doesValidateAttack: Bool = true) -> Bool {
+        switch validate(move, doesValidateAttack: doesValidateAttack) {
         case .success(()):
             return true
         case .failure(_):
