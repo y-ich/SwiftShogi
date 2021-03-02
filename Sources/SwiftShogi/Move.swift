@@ -24,6 +24,9 @@ public struct Move {
 extension Move.Source: Equatable {}
 extension Move.Destination: Equatable {}
 extension Move: Equatable {}
+extension Move.Source: Hashable {}
+extension Move.Destination: Hashable {}
+extension Move: Hashable {}
 
 extension Color: CustomStringConvertible {
     public var description: String {
@@ -73,7 +76,7 @@ extension Piece.Kind: CustomStringConvertible {
 
 extension Move: CustomStringConvertible {
     public var description: String {
-        let NUMBERS = ["１", "２", "３", "４", "５", "６", "７", "８", "９"]
+        let NUMBERS = ["９", "８", "７", "６","５", "４", "３", "２", "１"]
         let KANJI_NUMBERS = ["一", "二", "三", "四", "五", "六", "七", "八", "九"]
         guard case .board(let square) = destination else {
             fatalError("should not reach")

@@ -25,16 +25,16 @@ final class DirectionTests: XCTestCase {
         let directions: [(direction: Direction, expected: Int)] = [
             (.north, -9),
             (.south, 9),
-            (.east, -1),
-            (.west, 1),
-            (.northEast, -10),
-            (.northWest, -8),
-            (.southEast, 8),
-            (.southWest, 10),
-            (.northNorthEast, -19),
-            (.northNorthWest, -17),
-            (.southSouthEast, 17),
-            (.southSouthWest, 19),
+            (.east, 1),
+            (.west, -1),
+            (.northEast, -8),
+            (.northWest, -10),
+            (.southEast, 10),
+            (.southWest, 8),
+            (.northNorthEast, -17),
+            (.northNorthWest, -19),
+            (.southSouthEast, 19),
+            (.southSouthWest, 17),
         ]
         directions.forEach {
             XCTAssertEqual($0.direction.shift, $0.expected)

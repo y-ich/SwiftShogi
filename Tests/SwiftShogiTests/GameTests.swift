@@ -333,7 +333,7 @@ final class GameTests: XCTestCase {
                 shouldPromote: false
             )
         }
-        XCTAssertEqual(game.validMoves(), expectedFromBoard + expectedFromCapturedPiece)
+        XCTAssertEqual(Set(game.validMoves()), Set(expectedFromBoard + expectedFromCapturedPiece))
     }
 
     func testValidMovesWithMoveSource() {
@@ -354,7 +354,7 @@ final class GameTests: XCTestCase {
                 shouldPromote: false
             )
         }
-        XCTAssertEqual(game.validMoves(from: .board(.e9), piece: piece1), expectedFromBoard)
+        XCTAssertEqual(Set(game.validMoves(from: .board(.e9), piece: piece1)), Set(expectedFromBoard))
 
         let expectedFromCapturedPiece: [Move] = [
             .a1, .b1, .c1, .d1,      .f1, .g1, .h1, .i1,
@@ -374,7 +374,7 @@ final class GameTests: XCTestCase {
                 shouldPromote: false
             )
         }
-        XCTAssertEqual(game.validMoves(from: .capturedPiece, piece: piece3), expectedFromCapturedPiece)
+        XCTAssertEqual(Set(game.validMoves(from: .capturedPiece, piece: piece3)), Set(expectedFromCapturedPiece))
     }
 }
 

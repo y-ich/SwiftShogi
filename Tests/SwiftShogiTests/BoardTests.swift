@@ -54,8 +54,8 @@ final class BoardTests: XCTestCase {
         board[.b1] = piece2
         board[.c1] = piece3
 
-        XCTAssertEqual(Array(board.occupiedSquares()), [.a1, .b1, .c1])
-        XCTAssertEqual(Array(board.occupiedSquares(for: .black)), [.a1, .c1])
+        XCTAssertEqual(Set(board.occupiedSquares()), Set([.a1, .b1, .c1]))
+        XCTAssertEqual(Set(board.occupiedSquares(for: .black)), Set([.a1, .c1]))
     }
 
     func testEmptySquares() {

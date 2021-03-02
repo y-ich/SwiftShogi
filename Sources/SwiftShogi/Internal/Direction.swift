@@ -44,8 +44,8 @@ extension Direction {
             switch self {
             case .north: return -File.allCases.count
             case .south: return File.allCases.count
-            case .east: return -1
-            case .west: return 1
+            case .east: return 1
+            case .west: return -1
             }
         }
     }

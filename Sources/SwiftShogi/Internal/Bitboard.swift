@@ -3,7 +3,7 @@
 /// The first bit refers to `Square.a1`, and the last (81th) bit refers to `Square.i9`.
 //           north
 //         ihgfedcba
-//         000000000 a1(LSB)
+// i1(LSB) 000000000 1
 //         000000000 2
 //         000000000 3
 //         000000000 4
@@ -11,7 +11,7 @@
 //         000000000 6
 //         000000000 7
 //         000000000 8
-// (MSB)i9 000000000 9
+//         000000000 9 a9(MSB)
 //           south
 struct Bitboard: RawRepresentable, Equatable {
     private(set) var rawValue: UInt128

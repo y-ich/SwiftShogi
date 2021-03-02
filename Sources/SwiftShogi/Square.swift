@@ -10,16 +10,16 @@
 //      000000000 8
 //      000000000 9
 //        south
-public enum File: Int, CaseIterable {
-    case a
-    case b
-    case c
-    case d
-    case e
-    case f
-    case g
-    case h
+public enum File: Int, CaseIterable { // rawValueは左オリジンにする
     case i
+    case h
+    case g
+    case f
+    case e
+    case d
+    case c
+    case b
+    case a
 }
 
 public enum Rank: Int, CaseIterable {
@@ -36,15 +36,15 @@ public enum Rank: Int, CaseIterable {
 
 public enum Square: Int, CaseIterable {
     // 将棋盤は右上が原点なので、以下は左右反転させて見る
-    case a1, b1, c1, d1, e1, f1, g1, h1, i1
-    case a2, b2, c2, d2, e2, f2, g2, h2, i2
-    case a3, b3, c3, d3, e3, f3, g3, h3, i3
-    case a4, b4, c4, d4, e4, f4, g4, h4, i4
-    case a5, b5, c5, d5, e5, f5, g5, h5, i5
-    case a6, b6, c6, d6, e6, f6, g6, h6, i6
-    case a7, b7, c7, d7, e7, f7, g7, h7, i7
-    case a8, b8, c8, d8, e8, f8, g8, h8, i8
-    case a9, b9, c9, d9, e9, f9, g9, h9, i9
+    case i1, h1, g1, f1, e1, d1, c1, b1, a1
+    case i2, h2, g2, f2, e2, d2, c2, b2, a2
+    case i3, h3, g3, f3, e3, d3, c3, b3, a3
+    case i4, h4, g4, f4, e4, d4, c4, b4, a4
+    case i5, h5, g5, f5, e5, d5, c5, b5, a5
+    case i6, h6, g6, f6, e6, d6, c6, b6, a6
+    case i7, h7, g7, f7, e7, d7, c7, b7, a7
+    case i8, h8, g8, f8, e8, d8, c8, b8, a8
+    case i9, h9, g9, f9, e9, d9, c9, b9, a9
 }
 
 extension Square {
