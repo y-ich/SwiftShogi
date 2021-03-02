@@ -131,7 +131,7 @@ extension Board: CustomStringConvertible {
     public var description: String {
         var result = ""
         for rank in Rank.allCases {
-            for square in Square.cases(at: rank).reversed() {
+            for square in Square.cases(at: rank) {
                 if let piece = self[square] {
                     result += piece.description
                 } else {
