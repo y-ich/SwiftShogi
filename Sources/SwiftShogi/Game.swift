@@ -77,7 +77,7 @@ extension Game {
 
     /// Returns the valid moves for the current color.
     public func validMoves(doesValidateAttack: Bool = true) -> [Move] {
-        (movesFromBoard + movesFromCapturedPieces).filter { isValid(for: $0, doesValidateAttack: doesValidateAttack) }
+        [movesFromBoard, movesFromCapturedPieces].joined().filter { isValid(for: $0, doesValidateAttack: doesValidateAttack) }
     }
 
     /// Returns the valid moves of `piece` from `source`.
@@ -227,8 +227,8 @@ private extension Game {
         }
     }
 
-    var movesFromCapturedPieces: [Move] {
-        capturedPieces.filter({ $0.color == color }).flatMap { capturedPieceMoves(for: $0) }
+    var movesFromCapturedPieces: LazySequence<[Move]> {
+        capturedPieces.filter({ $0.color == color }).lazy.flatMap { capturedPieceMoves(for: $0) }.lazy
     }
 
     func capturedPieceMoves(for piece: Piece) -> [Move] {
