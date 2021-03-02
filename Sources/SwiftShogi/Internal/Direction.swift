@@ -1,16 +1,16 @@
  enum Direction: Int, CaseIterable {
     case north = -9
     case south = 9
-    case east = -1
-    case west = 1
-    case northEast = -10
-    case northWest = -8
-    case southEast = 8
-    case southWest = 10
-    case northNorthEast = -19
-    case northNorthWest = -17
-    case southSouthEast = 17
-    case southSouthWest = 19
+    case east = 1
+    case west = -1
+    case northEast = -8
+    case northWest = -10
+    case southEast = 10
+    case southWest = 8
+    case northNorthEast = -17
+    case northNorthWest = -19
+    case southSouthEast = 19
+    case southSouthWest = 17
 }
 
 extension Direction {
@@ -45,7 +45,6 @@ extension Direction {
     }
 
     var shift: Int {
-        //components.map({ $0.shift }).reduce(0, +)
         rawValue
     }
  }
@@ -61,8 +60,8 @@ extension Direction {
             switch self {
             case .north: return -File.allCases.count
             case .south: return File.allCases.count
-            case .east: return -1
-            case .west: return 1
+            case .east: return 1
+            case .west: return -1
             }
         }
     }

@@ -1,6 +1,18 @@
 /// A bitmap of eighty-one bits suitable for storing squares for various pieces.
 ///
 /// The first bit refers to `Square.a1`, and the last (81th) bit refers to `Square.i9`.
+//           north
+//         ihgfedcba
+// i1(LSB) 000000000 1
+//         000000000 2
+//         000000000 3
+//         000000000 4
+//    west 000000000 5 east
+//         000000000 6
+//         000000000 7
+//         000000000 8
+//         000000000 9 a9(MSB)
+//           south
 struct Bitboard: RawRepresentable, Equatable {
     private(set) var rawValue: UInt128
 
