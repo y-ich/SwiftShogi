@@ -26,6 +26,7 @@ struct Bitboard: RawRepresentable, Equatable {
 
 extension Bitboard {
     /// Returns the squares where the bit is set to 1.
+    var indicesOf1s: LazySequence<[Int]> { Square.allCases.lazy.filter { self[$0] }.map { $0.rawValue }.lazy }
     var squares: LazySequence<[Square]> { Square.allCases.lazy.filter { self[$0] }.lazy }
 
     /// The `Bool` value for the bit at `square`.

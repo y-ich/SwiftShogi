@@ -20,6 +20,10 @@ extension Board {
         }
     }
 
+    public func indicesOf(_ piece: Piece) -> LazySequence<[Int]> {
+        pieceBitboards[piece.rawValue].indicesOf1s
+    }
+
     /// Returns `true` if a piece can attack from the source square to the destination square.
     public func isAttackable(from sourceSquare: Square, to destinationSquare: Square) -> Bool {
         attacksBitboard(from: sourceSquare)[destinationSquare]
