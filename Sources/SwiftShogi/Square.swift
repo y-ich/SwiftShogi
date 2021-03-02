@@ -1,3 +1,15 @@
+//        north
+//      ihgfedcba
+//      000000000 1
+//      000000000 2
+//      000000000 3
+//      000000000 4
+// west 000000000 5 east
+//      000000000 6
+//      000000000 7
+//      000000000 8
+//      000000000 9
+//        south
 public enum File: Int, CaseIterable {
     case a
     case b
