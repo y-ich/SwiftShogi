@@ -65,7 +65,9 @@ extension Square {
     }
 
     public static func promotableCases(for color: Color) -> [Self] {
-        let ranks: [Rank] = color.isBlack ? [.one, .two, .three] : [.seven, .eight, .nine]
-        return allCases.filter { ranks.contains($0.rank) }
+        //let ranks: [Rank] = color.isBlack ? [.one, .two, .three] : [.seven, .eight, .nine]
+        //return allCases.filter { ranks.contains($0.rank) }
+        let range = color.isBlack ? 0..<(3 * File.allCases.count) : (Square.allCases.count - 3 * File.allCases.count)..<Square.allCases.count
+        return range.map { Square(rawValue: $0)! }
     }
 }
