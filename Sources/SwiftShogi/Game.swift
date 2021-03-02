@@ -85,9 +85,9 @@ extension Game {
         let moves: [Move] = {
             switch source {
             case let .board(square):
-                return boardPieceMoves(for: piece, from: square)
+                return Array(boardPieceMoves(for: piece, from: square))
             case .capturedPiece:
-                return capturedPieceMoves(for: piece)
+                return Array(capturedPieceMoves(for: piece))
             }
         }()
         return moves.filter { isValid(for: $0) }
@@ -214,7 +214,7 @@ private extension Game {
         board.occupiedSquares(for: color).flatMap { boardPieceMoves(for: board[$0]!, from: $0) }.lazy
     }
 
-    func boardPieceMoves(for piece: Piece, from square: Square) -> [Move] {
+    func boardPieceMoves(for piece: Piece, from square: Square) -> LazySequence<[Move]> {
         board.attackableSuqares(from: square).flatMap { attackableSuqare in
             [true, false].map { shouldPromote in
                 Move(
@@ -224,17 +224,17 @@ private extension Game {
                     shouldPromote: shouldPromote
                 )
             }
-        }
+        }.lazy
     }
 
     var movesFromCapturedPieces: LazySequence<[Move]> {
         capturedPieces.filter({ $0.color == color }).lazy.flatMap { capturedPieceMoves(for: $0) }.lazy
     }
 
-    func capturedPieceMoves(for piece: Piece) -> [Move] {
+    func capturedPieceMoves(for piece: Piece) -> LazySequence<[Move]> {
         board.emptySquares.map {
             Move(source: .capturedPiece, destination: .board($0), piece: piece)
-        }
+        }.lazy
     }
 }
 
