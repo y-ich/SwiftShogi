@@ -14,10 +14,15 @@
 //         000000000 9 a9(MSB)
 //           south
 struct Bitboard: RawRepresentable, Equatable {
+    static let squares: [Bitboard] = Square.allCases.map { Bitboard(rawValue: 1 << UInt($0.rawValue)) }
     private(set) var rawValue: UInt128
 
     init(rawValue: UInt128) {
         self.rawValue = rawValue & Self.maskValue
+    }
+
+    init(square: Square) {
+        self = Bitboard.squares[square.rawValue]
     }
 
     /// A mask value to prevent exceeding the maximum value of 81-bit integer.
@@ -54,10 +59,6 @@ extension Bitboard {
 }
 
 private extension Bitboard {
-    init(square: Square) {
-        self.init(rawValue: 1 << UInt(square.rawValue))
-    }
-
     func intersects(_ other: Self) -> Bool {
         self & other != Self(rawValue: 0)
     }
