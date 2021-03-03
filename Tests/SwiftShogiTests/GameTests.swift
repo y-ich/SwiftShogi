@@ -378,8 +378,8 @@ final class GameTests: XCTestCase {
     }
 
     func testValidMoves2() {
-        let game = Game(sfen: SFEN(string: "7n1/6s2/5p2+L/3k5/4p2L1/P2P2pP1/1+PP1PP3/1R4SBp/LNSGKG1N1/ w L2G7PBRNS")!)
-        let move = Move(source: .board(.i8), destination: .board(.i9), piece: Piece(kind: .pawn(.normal), color: .white))
+        let game = Game(sfen: SFEN(string: "1+R7/3k5/8n/2p6/l1S3ppl/p1S1rpP1p/P1PP1P1PP/+P2K2GB1/LNSG2SNL/ w NBp3P2G")!)
+        let move = Move(source: .capturedPiece, destination: .board(.e9), piece: Piece(kind: .pawn(.normal), color: .white))
         XCTAssertFalse(game.validMoves().contains(move))
     }
 }

@@ -46,6 +46,7 @@ extension Game {
         case illegalAttack
         case kingPieceIsChecked
         case pieceAlreadyPromoted
+        case deadPiece
     }
 
     /// Validates `move`.
@@ -58,6 +59,13 @@ extension Game {
             result = result.flatMap {
                 validatePromotion(
                     source: move.source,
+                    destination: move.destination,
+                    piece: move.piece
+                )
+            }
+        } else {
+            result = result.flatMap {
+                validateLive(
                     destination: move.destination,
                     piece: move.piece
                 )
@@ -197,6 +205,27 @@ private extension Game {
             guard !board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) else {
                 return .failure(MoveValidationError.kingPieceIsChecked)
             }
+        }
+        return .success(())
+    }
+
+    // moveのshouldPromoteはfalseであることを仮定する
+    func validateLive(destination: Move.Destination, piece: Piece /*, shouldPromote: Bool*/) -> Result<Void, MoveValidationError> {
+        switch piece.kind {
+        case .pawn(.normal), .lance(.normal):
+            if case .board(let square) = destination {
+                if (piece.color == .black && square.isOn1) || (piece.color == .white && square.isOn9) {
+                    return .failure(MoveValidationError.deadPiece)
+                }
+            }
+        case .knight(.normal):
+            if case .board(let square) = destination {
+                if (piece.color == .black && square.isOn1Or2) || (piece.color == .white && square.isOn8Or9) {
+                    return .failure(MoveValidationError.deadPiece)
+                }
+            }
+        default:
+            break
         }
         return .success(())
     }

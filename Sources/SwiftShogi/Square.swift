@@ -54,6 +54,10 @@ extension Square {
 
     public var file: File { File(rawValue: rawValue % File.allCases.count)! }
     public var rank: Rank { Rank(rawValue: rawValue / File.allCases.count)! }
+    public var isOn1: Bool { rawValue < File.allCases.count }
+    public var isOn9: Bool { rawValue >= Square.allCases.count - File.allCases.count }
+    public var isOn1Or2: Bool { rawValue < File.allCases.count * 2 }
+    public var isOn8Or9: Bool { rawValue >= Square.allCases.count - File.allCases.count * 2 }
 
     public static func cases(at file: File) -> [Self] {
         let f = file
@@ -70,4 +74,5 @@ extension Square {
         let range = color.isBlack ? 0..<(3 * File.allCases.count) : (Square.allCases.count - 3 * File.allCases.count)..<Square.allCases.count
         return range.map { Square(rawValue: $0)! }
     }
+
 }
