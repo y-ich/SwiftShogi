@@ -27,24 +27,22 @@ struct UInt128 {
     }
 
     @inline(__always)
-    static func << (lhs: Self, rhs: Int) -> Self {
+    static func << (lhs: Self, rhs: UInt) -> Self {
         let shift = rhs
-        if shift < 0 { return lhs >> abs(shift) }
 
         return Self(
-            upperBits: lhs.upperBits << shift | lhs.lowerBits << (shift - UInt64.bitWidth),
+            upperBits: lhs.upperBits << shift | lhs.lowerBits << (Int(shift) - UInt64.bitWidth),
             lowerBits: lhs.lowerBits << shift
         )
     }
 
     @inline(__always)
-    static func >> (lhs: Self, rhs: Int) -> Self {
+    static func >> (lhs: Self, rhs: UInt) -> Self {
         let shift = rhs
-        if shift < 0 { return lhs << abs(shift) }
 
         return Self(
             upperBits: lhs.upperBits >> shift,
-            lowerBits: lhs.lowerBits >> shift | lhs.upperBits >> (shift - UInt64.bitWidth)
+            lowerBits: lhs.lowerBits >> shift | lhs.upperBits >> (Int(shift) - UInt64.bitWidth)
         )
     }
 }

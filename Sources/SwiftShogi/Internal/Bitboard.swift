@@ -55,7 +55,7 @@ extension Bitboard {
 
 private extension Bitboard {
     init(square: Square) {
-        self.init(rawValue: 1 << square.rawValue)
+        self.init(rawValue: 1 << UInt(square.rawValue))
     }
 
     func intersects(_ other: Self) -> Bool {
@@ -76,8 +76,8 @@ private extension Bitboard {
     func shifted(toward direction: Direction) -> Self {
        var bitboard = self << direction.shift
         // Prevents rank changes by shifting
-        if direction.containsEast && intersects(Self.fileA) { bitboard &= ~Self.fileI }
-        if direction.containsWest && intersects(Self.fileI) { bitboard &= ~Self.fileA }
+        if direction.containsEast { bitboard &= ~Self.fileI }
+        if direction.containsWest { bitboard &= ~Self.fileA }
         return bitboard
     }
 
@@ -93,4 +93,4 @@ func & (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawVa
 func &= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs & rhs }
 func | (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawValue | rhs.rawValue) }
 func |= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs | rhs }
-func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: lhs.rawValue << rhs) }
+func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: rhs >= 0 ? (lhs.rawValue << UInt(rhs)) : (lhs.rawValue >> UInt(-rhs))) }
