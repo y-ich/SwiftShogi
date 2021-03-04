@@ -96,12 +96,15 @@ extension Game {
                 )
             }
         } else {
+            /*
+            // 死に駒チェック
             result = result.flatMap {
                 validateLive(
                     destination: move.destination,
                     piece: move.piece
                 )
             }
+            */
         }
         /*
         // 王手放置チェック
