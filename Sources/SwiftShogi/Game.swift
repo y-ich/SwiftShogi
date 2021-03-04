@@ -50,7 +50,7 @@ extension Game {
     }
 
     /// Validates `move`.
-    public func validate(_ move: Move, doesValidateAttack: Bool = true) -> Result<Void, MoveValidationError> {
+    public func validate(_ move: Move) -> Result<Void, MoveValidationError> {
         var result = validateSource(move.source, piece: move.piece)
         result = result.flatMap {
             validateDestination(move.destination)
@@ -71,21 +71,51 @@ extension Game {
                 )
             }
         }
-        if doesValidateAttack {
+        result = result.flatMap {
+            validateAttack(
+                source: move.source,
+                destination: move.destination,
+                piece: move.piece
+            )
+        }
+        return result
+    }
+
+    public func validateForValidMoves(_ move: Move) -> Result<Void, MoveValidationError> {
+        // var result = validateSource(move.source, piece: move.piece) sourceはvalidと保証されていると仮定
+        var result: Result<Void, MoveValidationError> = .success(())
+        if move.source != .capturedPiece {
+            result = validateDestination(move.destination)
+        }
+        if move.shouldPromote {
             result = result.flatMap {
-                validateAttack(
+                validatePromotion(
                     source: move.source,
                     destination: move.destination,
                     piece: move.piece
                 )
             }
+        } else {
+            result = result.flatMap {
+                validateLive(
+                    destination: move.destination,
+                    piece: move.piece
+                )
+            }
+        }
+        result = result.flatMap {
+            validateAttack(
+                source: move.source,
+                destination: move.destination,
+                piece: move.piece
+            )
         }
         return result
     }
 
     /// Returns the valid moves for the current color.
-    public func validMoves(doesValidateAttack: Bool = true) -> [Move] {
-        [movesFromBoard, movesFromCapturedPieces].joined().filter { isValid(for: $0, doesValidateAttack: doesValidateAttack) }
+    public func validMoves() -> [Move] {
+        [movesFromBoard, movesFromCapturedPieces].joined().filter { isValidForValidMoves(for: $0) }
     }
 
     /// Returns the valid moves of `piece` from `source`.
@@ -230,8 +260,17 @@ private extension Game {
         return .success(())
     }
 
-    func isValid(for move: Move, doesValidateAttack: Bool = true) -> Bool {
-        switch validate(move, doesValidateAttack: doesValidateAttack) {
+    func isValid(for move: Move) -> Bool {
+        switch validate(move) {
+        case .success(()):
+            return true
+        case .failure(_):
+            return false
+        }
+    }
+
+    func isValidForValidMoves(for move: Move) -> Bool {
+        switch validateForValidMoves(move) {
         case .success(()):
             return true
         case .failure(_):
@@ -245,7 +284,7 @@ private extension Game {
 
     func boardPieceMoves(for piece: Piece, from square: Square) -> LazySequence<[Move]> {
         board.attackableSuqares(from: square).flatMap { attackableSuqare in
-            [true, false].map { shouldPromote in
+            [true, false].lazy.map { shouldPromote in
                 Move(
                     source: .board(square),
                     destination: .board(attackableSuqare),

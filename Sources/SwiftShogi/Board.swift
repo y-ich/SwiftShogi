@@ -35,10 +35,10 @@ extension Board {
     }
 
     /// Returns the attackable squares to `square` corresponding to `color`.
-    public func attackableSquares(to destinationSquare: Square, for color: Color? = nil) -> [Square] {
+    public func attackableSquares(to destinationSquare: Square, for color: Color? = nil) -> LazySequence<[Square]> {
         occupiedSquares(for: color).filter { sourceSquare in
             isAttackable(from: sourceSquare, to: destinationSquare)
-        }
+        }.lazy
     }
 
     /// Returns the occupied squares corresponding to `color`.
