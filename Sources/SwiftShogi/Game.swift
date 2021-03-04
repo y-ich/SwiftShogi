@@ -103,13 +103,16 @@ extension Game {
                 )
             }
         }
+        /*
+        // 王手放置チェック
         result = result.flatMap {
-            validateAttack(
+            validateAttackForValidMoves(
                 source: move.source,
                 destination: move.destination,
                 piece: move.piece
             )
         }
+        */
         return result
     }
 
@@ -228,6 +231,20 @@ private extension Game {
             guard board.isAttackable(from: sourceSquare, to: destinationSquare) else {
                 return .failure(MoveValidationError.illegalAttack)
             }
+            guard !board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) else {
+                return .failure(MoveValidationError.kingPieceIsChecked)
+            }
+        case let (.capturedPiece, .board(destinationSquare), piece):
+            guard !board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) else {
+                return .failure(MoveValidationError.kingPieceIsChecked)
+            }
+        }
+        return .success(())
+    }
+
+    func validateAttackForValidMoves(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
+        switch (source, destination, piece) {
+        case let (.board(sourceSquare), .board(destinationSquare), _):
             guard !board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) else {
                 return .failure(MoveValidationError.kingPieceIsChecked)
             }
