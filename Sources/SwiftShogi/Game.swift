@@ -96,7 +96,6 @@ extension Game {
                 )
             }
         } else {
-            /*
             // 死に駒チェック
             result = result.flatMap {
                 validateLive(
@@ -104,9 +103,7 @@ extension Game {
                     piece: move.piece
                 )
             }
-            */
         }
-        /*
         // 王手放置チェック
         result = result.flatMap {
             validateAttackForValidMoves(
@@ -115,7 +112,6 @@ extension Game {
                 piece: move.piece
             )
         }
-        */
         return result
     }
 
