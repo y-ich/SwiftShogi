@@ -64,6 +64,7 @@ extension Game {
                 )
             }
         } else {
+            // 死に駒チェック
             result = result.flatMap {
                 validateLive(
                     destination: move.destination,
@@ -71,6 +72,7 @@ extension Game {
                 )
             }
         }
+        // 王手放置チェック
         result = result.flatMap {
             validateAttack(
                 source: move.source,
@@ -81,6 +83,7 @@ extension Game {
         return result
     }
 
+    // なんちゃって指し手生成。反則手を含む
     public func validateForValidMoves(_ move: Move) -> Result<Void, MoveValidationError> {
         // var result = validateSource(move.source, piece: move.piece) sourceはvalidと保証されていると仮定
         var result: Result<Void, MoveValidationError> = .success(())
@@ -95,22 +98,6 @@ extension Game {
                     piece: move.piece
                 )
             }
-        } else {
-            // 死に駒チェック
-            result = result.flatMap {
-                validateLive(
-                    destination: move.destination,
-                    piece: move.piece
-                )
-            }
-        }
-        // 王手放置チェック
-        result = result.flatMap {
-            validateAttackForValidMoves(
-                source: move.source,
-                destination: move.destination,
-                piece: move.piece
-            )
         }
         return result
     }

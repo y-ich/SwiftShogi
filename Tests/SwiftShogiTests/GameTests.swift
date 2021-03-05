@@ -376,12 +376,6 @@ final class GameTests: XCTestCase {
         }
         XCTAssertEqual(Set(game.validMoves(from: .capturedPiece, piece: piece3)), Set(expectedFromCapturedPiece))
     }
-
-    func testValidMoves2() {
-        let game = Game(sfen: SFEN(string: "1+R7/3k5/8n/2p6/l1S3ppl/p1S1rpP1p/P1PP1P1PP/+P2K2GB1/LNSG2SNL/ w NBp3P2G")!)
-        let move = Move(source: .capturedPiece, destination: .board(.e9), piece: Piece(kind: .pawn(.normal), color: .white))
-        XCTAssertFalse(game.validMoves().contains(move))
-    }
 }
 
 private extension Board {
