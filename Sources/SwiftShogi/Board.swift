@@ -135,7 +135,7 @@ extension Board: CustomStringConvertible {
                 if let piece = self[square] {
                     result += piece.description
                 } else {
-                    result += "　"
+                    result += "　・"
                 }
             }
             result += "\n"

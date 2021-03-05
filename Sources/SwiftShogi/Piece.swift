@@ -269,6 +269,6 @@ extension Piece: RawRepresentable {
 }
 extension Piece: CustomStringConvertible {
     public var description: String {
-        return (color == .black ? " " : "v") + kind.description
+        return (color == .black ? "　" : "ｖ") + kind.description
     }
 }
