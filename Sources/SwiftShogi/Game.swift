@@ -19,19 +19,32 @@ public struct Game {
     }
 }
 
+public enum PerformMode {
+    case strict
+    case assumesGenerated
+    case noCheck
+}
+
 extension Game {
     /// Performs `move` with validating it.
-    public mutating func perform(_ move: Move) throws {
-        switch validate(move) {
-        case .success(()):
-            capturePieceIfNeeded(from: move.destination)
-            remove(move.piece, from: move.source)
-            insert(move.piece, to: move.destination, shouldPromote: move.shouldPromote)
-
-            color.toggle()
-        case .failure(let e):
-            throw e
+    public mutating func perform(_ move: Move, mode: PerformMode = .strict) throws {
+        switch mode {
+        case .strict:
+            if case .failure(let e) = validate(move) {
+                throw e
+            }
+        case .assumesGenerated:
+            if case .failure(let e) = validate(move, assumesGenerated: true) {
+                throw e
+            }
+        default:
+            break
         }
+        capturePieceIfNeeded(from: move.destination)
+        remove(move.piece, from: move.source)
+        insert(move.piece, to: move.destination, shouldPromote: move.shouldPromote)
+
+        color.toggle()
     }
 
     /// An error in move validation.
@@ -50,7 +63,7 @@ extension Game {
     }
 
     /// Validates `move`.
-    public func validate(_ move: Move) -> Result<Void, MoveValidationError> {
+    public func validate(_ move: Move, assumesGenerated: Bool = false) -> Result<Void, MoveValidationError> {
         var result = validateSource(move.source, piece: move.piece)
         result = result.flatMap {
             validateDestination(move.destination)
@@ -72,13 +85,22 @@ extension Game {
                 )
             }
         }
-        // 王手放置チェック
-        result = result.flatMap {
-            validateAttack(
-                source: move.source,
-                destination: move.destination,
-                piece: move.piece
-            )
+        if assumesGenerated {
+            result = result.flatMap {
+                validateAttackAssumingGenerated(
+                    source: move.source,
+                    destination: move.destination,
+                    piece: move.piece
+                )
+            }
+        } else {
+            result = result.flatMap {
+                validateAttack(
+                    source: move.source,
+                    destination: move.destination,
+                    piece: move.piece
+                )
+            }
         }
         return result
     }
@@ -228,7 +250,7 @@ private extension Game {
         return .success(())
     }
 
-    func validateAttackForValidMoves(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
+    func validateAttackAssumingGenerated(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
         switch (source, destination, piece) {
         case let (.board(sourceSquare), .board(destinationSquare), _):
             guard !board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) else {
