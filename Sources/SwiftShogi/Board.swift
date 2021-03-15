@@ -20,6 +20,10 @@ extension Board {
         }
     }
 
+    public func squaresOf(_ piece: Piece) -> LazySequence<[Square]> {
+        pieceBitboards[piece.rawValue].squares
+    }
+
     public func indicesOf(_ piece: Piece) -> LazySequence<[Int]> {
         pieceBitboards[piece.rawValue].indicesOf1s
     }
