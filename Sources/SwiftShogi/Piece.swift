@@ -172,14 +172,20 @@ private extension Piece {
 
 extension Piece.Kind: CaseIterable {
     public static let allCases: [Self] = [
-        .pawn(.normal), .pawn(.promoted),
-        .lance(.normal), .lance(.promoted),
-        .knight(.normal), .knight(.promoted),
-        .silver(.normal), .silver(.promoted),
+        .pawn(.normal),
+        .lance(.normal),
+        .knight(.normal),
+        .silver(.normal),
         .gold,
-        .bishop(.normal), .bishop(.promoted),
-        .rook(.normal), .rook(.promoted),
+        .bishop(.normal),
+        .rook(.normal),
         .king,
+        .pawn(.promoted),
+        .lance(.promoted),
+        .knight(.promoted),
+        .silver(.promoted),
+        .bishop(.promoted),
+        .rook(.promoted),
     ]
 }
 
@@ -197,41 +203,39 @@ extension Piece.Kind: RawRepresentable {
     public typealias RawValue = Int
 
     public init?(rawValue: RawValue) {
-        switch rawValue {
-        case 0: self = .pawn(.normal)
-        case 1: self = .lance(.normal)
-        case 2: self = .knight(.normal)
-        case 3: self = .silver(.normal)
-        case 4: self = .gold
-        case 5: self = .bishop(.normal)
-        case 6: self = .rook(.normal)
-        case 7: self = .king
-        case 8: self = .pawn(.promoted)
-        case 9: self = .lance(.promoted)
-        case 10: self = .knight(.promoted)
-        case 11: self = .silver(.promoted)
-        case 12: self = .bishop(.promoted)
-        case 13: self = .rook(.promoted)
-        default: return nil
-        }
+        self = Piece.Kind.allCases[rawValue]
     }
 
     public var rawValue: RawValue {
         switch self {
-        case .pawn(.normal): return 0
-        case .lance(.normal): return 1
-        case .knight(.normal): return 2
-        case .silver(.normal): return 3
-        case .gold: return 4
-        case .bishop(.normal): return 5
-        case .rook(.normal): return 6
-        case .king: return 7
-        case .pawn(.promoted): return 8
-        case .lance(.promoted): return 9
-        case .knight(.promoted): return 10
-        case .silver(.promoted): return 11
-        case .bishop(.promoted): return 12
-        case .rook(.promoted): return 13
+        case .pawn(.normal):
+            return 0
+        case .lance(.normal):
+            return 1
+        case .knight(.normal):
+            return 2
+        case .silver(.normal):
+            return 3
+        case .gold:
+            return 4
+        case .bishop(.normal):
+            return 5
+        case .rook(.normal):
+            return 6
+        case .king:
+            return 7
+        case .pawn(.promoted):
+            return 8
+        case .lance(.promoted):
+            return 9
+        case .knight(.promoted):
+            return 10
+        case .silver(.promoted):
+            return 11
+        case .bishop(.promoted):
+            return 12
+        case .rook(.promoted):
+            return 13
         }
     }
 }
