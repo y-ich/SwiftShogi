@@ -1,3 +1,4 @@
+// File.allCases.count, Rank.callCases.countを使うほうが一貫性があるが、rawValueはリテラルしか許されない
  enum Direction: Int, CaseIterable {
     case north = -9
     case south = 9
@@ -15,14 +16,30 @@
 
 extension Direction {
     var flippedVertically: Self {
-        let flippedComponents: [Component] = components.map {
-            switch $0 {
-            case .north: return .south
-            case .south: return .north
-            default: return $0
-            }
+        switch self {
+        case .north:
+            return .south
+        case .south:
+            return .north
+        case .northEast:
+            return .southEast
+        case .northWest:
+            return .southWest
+        case .southEast:
+            return .northEast
+        case .southWest:
+            return .northWest
+        case .northNorthEast:
+            return .southSouthEast
+        case .northNorthWest:
+            return .southSouthWest
+        case .southSouthEast:
+            return .northNorthEast
+        case .southSouthWest:
+            return .northNorthWest
+        default:
+            return self
         }
-        return Self.allCases.first { $0.components == flippedComponents }!
     }
 
     var containsEast: Bool {

@@ -14,6 +14,7 @@
 //         000000000 9 a9(MSB)
 //           south
 struct Bitboard: RawRepresentable, Equatable {
+    static let empty = Self(rawValue: 0)
     static let squares: [Bitboard] = Square.allCases.map { Bitboard(rawValue: 1 << UInt($0.rawValue)) }
     private(set) var rawValue: UInt128
 
@@ -60,7 +61,7 @@ extension Bitboard {
 
 private extension Bitboard {
     func intersects(_ other: Self) -> Bool {
-        self & other != Self(rawValue: 0)
+        self & other != Self.empty
     }
 
     func filled(toward direction: Direction, stoppers: Bitboard) -> Self {
@@ -77,8 +78,12 @@ private extension Bitboard {
     func shifted(toward direction: Direction) -> Self {
        var bitboard = self << direction.shift
         // Prevents rank changes by shifting
-        if direction.containsEast { bitboard &= ~Self.fileI }
-        if direction.containsWest { bitboard &= ~Self.fileA }
+        if direction.containsEast {
+            bitboard &= ~Self.fileI
+        }
+        if direction.containsWest {
+            bitboard &= ~Self.fileA
+        }
         return bitboard
     }
 
@@ -89,9 +94,26 @@ private extension Bitboard {
         = Square.cases(at: .i).map(Self.init).reduce(Bitboard(rawValue: 0), |)
 }
 
-prefix func ~ (x: Bitboard) -> Bitboard { Bitboard(rawValue: ~x.rawValue) }
-func & (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawValue & rhs.rawValue) }
-func &= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs & rhs }
-func | (lhs: Bitboard, rhs: Bitboard) -> Bitboard { Bitboard(rawValue: lhs.rawValue | rhs.rawValue) }
-func |= (lhs: inout Bitboard, rhs: Bitboard) { lhs = lhs | rhs }
-func << (lhs: Bitboard, rhs: Int) -> Bitboard { Bitboard(rawValue: rhs >= 0 ? (lhs.rawValue << UInt(rhs)) : (lhs.rawValue >> UInt(-rhs))) }
+prefix func ~(x: Bitboard) -> Bitboard {
+    Bitboard(rawValue: ~x.rawValue)
+}
+
+func &(lhs: Bitboard, rhs: Bitboard) -> Bitboard {
+    Bitboard(rawValue: lhs.rawValue & rhs.rawValue)
+}
+
+func &=(lhs: inout Bitboard, rhs: Bitboard) {
+    lhs = lhs & rhs
+}
+
+func |(lhs: Bitboard, rhs: Bitboard) -> Bitboard {
+    Bitboard(rawValue: lhs.rawValue | rhs.rawValue)
+}
+
+func |=(lhs: inout Bitboard, rhs: Bitboard) {
+    lhs = lhs | rhs
+}
+
+func <<(lhs: Bitboard, rhs: Int) -> Bitboard {
+    Bitboard(rawValue: rhs >= 0 ? (lhs.rawValue << UInt(rhs)) : (lhs.rawValue >> UInt(-rhs)))
+}
