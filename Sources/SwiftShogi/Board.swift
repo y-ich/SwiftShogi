@@ -21,11 +21,11 @@ extension Board {
     }
 
     public func squaresOf(_ piece: Piece) -> LazySequence<[Square]> {
-        pieceBitboards[piece.rawValue].squares
+        pieceBitboards[piece.rawValue].occupiedSquares
     }
 
-    public func indicesOf(_ piece: Piece) -> LazySequence<[Int]> {
-        pieceBitboards[piece.rawValue].indicesOf1s
+    public func indicesOf(_ piece: Piece) -> OccupiedIndexSequence {
+        pieceBitboards[piece.rawValue].occupiedIndices
     }
 
     /// Returns `true` if a piece can attack from the source square to the destination square.
@@ -35,7 +35,7 @@ extension Board {
 
     /// Returns the attackable squares from `square`.
     public func attackableSuqares(from square: Square) -> LazySequence<[Square]> {
-        attacksBitboard(from: square).squares
+        attacksBitboard(from: square).occupiedSquares
     }
 
     /// Returns the attackable squares to `square` corresponding to `color`.
@@ -47,18 +47,18 @@ extension Board {
 
     /// Returns the occupied squares corresponding to `color`.
     public func occupiedSquares(for color: Color? = nil) -> LazySequence<[Square]> {
-        occupiedBitboard(for: color).squares
+        occupiedBitboard(for: color).occupiedSquares
     }
 
     /// Returns the empty squares.
     public var emptySquares: LazySequence<[Square]> {
-        (~occupiedBitboard()).squares
+        (~occupiedBitboard()).occupiedSquares
     }
 
     /// Returns `true` if the king for `color` is in check.
     public func isKingChecked(for color: Color) -> Bool {
         let piece = Piece(kind: .king, color: color)
-        guard let square = pieceBitboards[piece.rawValue].squares.first else { return false }
+        guard let square = pieceBitboards[piece.rawValue].occupiedSquares.first else { return false }
         return !attackableSquares(to: square, for: color.toggled()).isEmpty
     }
 

@@ -1,6 +1,6 @@
 struct UInt128 {
-    private(set) var upperBits: UInt64
-    private(set) var lowerBits: UInt64
+    fileprivate(set) var upperBits: UInt64
+    fileprivate(set) var lowerBits: UInt64
 
     @inline(__always)
     prefix static func ~ (x: Self) -> Self {
@@ -58,3 +58,24 @@ extension UInt128: ExpressibleByIntegerLiteral {
 }
 
 extension UInt128: Equatable {}
+
+struct OnesBitIndexIterator: IteratorProtocol {
+    var uint128: UInt128
+    init(_ uint128: UInt128) {
+        self.uint128 = uint128
+    }
+
+    mutating func next() -> Int? {
+        if uint128.lowerBits != 0 {
+            let result = uint128.lowerBits.trailingZeroBitCount
+            uint128.lowerBits = uint128.lowerBits & (uint128.lowerBits - 1)
+            return result
+        } else if uint128.upperBits != 0 {
+            let result = uint128.upperBits.trailingZeroBitCount + UInt64.bitWidth
+            uint128.upperBits = uint128.upperBits & (uint128.upperBits - 1)
+            return result
+        } else {
+            return nil
+        }
+    }    
+}

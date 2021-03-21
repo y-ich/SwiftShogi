@@ -32,8 +32,8 @@ struct Bitboard: RawRepresentable, Equatable {
 
 extension Bitboard {
     /// Returns the squares where the bit is set to 1.
-    var indicesOf1s: LazySequence<[Int]> { Square.allCases.lazy.filter { self[$0] }.map { $0.rawValue }.lazy }
-    var squares: LazySequence<[Square]> { Square.allCases.lazy.filter { self[$0] }.lazy }
+    var occupiedIndices: OccupiedIndexSequence { OccupiedIndexSequence(self) }
+    var occupiedSquares: LazySequence<[Square]> { occupiedIndices.map { Square(rawValue: $0)! }.lazy }
 
     /// The `Bool` value for the bit at `square`.
     subscript(square: Square) -> Bool {
@@ -116,4 +116,16 @@ func |=(lhs: inout Bitboard, rhs: Bitboard) {
 
 func <<(lhs: Bitboard, rhs: Int) -> Bitboard {
     Bitboard(rawValue: rhs >= 0 ? (lhs.rawValue << UInt(rhs)) : (lhs.rawValue >> UInt(-rhs)))
+}
+
+public struct OccupiedIndexSequence: Sequence, IteratorProtocol {
+    var iterator: OnesBitIndexIterator
+
+    init(_ bitboard: Bitboard) {
+        iterator = OnesBitIndexIterator(bitboard.rawValue)
+    }
+
+    public mutating func next() -> Int? {
+        iterator.next()
+    }    
 }

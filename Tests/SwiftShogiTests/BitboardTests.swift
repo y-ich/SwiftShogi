@@ -14,7 +14,7 @@ final class BitboardTests: XCTestCase {
             0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 1,
         ])
-        XCTAssertEqual(Array(bitboard.squares), [.i1, .a9])
+        XCTAssertEqual(Array(bitboard.occupiedSquares), [.i1, .a9])
     }
 
     func testSubscript() {
