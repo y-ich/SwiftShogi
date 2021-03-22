@@ -72,7 +72,7 @@ extension Board {
     /// Returns `true` if the king for `color` is in check by moving `piece`.
     public func isKingCheckedByMovingPiece(_ piece: Piece, to destinationSquare: Square, for color: Color) -> Bool {
         var board = self
-        board.movePiece(piece, to: destinationSquare)
+        board.drop(piece: piece, to: destinationSquare)
         return board.isKingChecked(for: color)
     }
 }
@@ -103,11 +103,11 @@ private extension Board {
     }
 
     mutating func movePiece(from sourceSquare: Square, to destinationSquare: Square) {
-        movePiece(self[sourceSquare], to: destinationSquare)
+        drop(piece: self[sourceSquare], to: destinationSquare)
         self[sourceSquare] = nil
     }
 
-    mutating func movePiece(_ piece: Piece?, to destinationSquare: Square) {
+    mutating func drop(piece: Piece?, to destinationSquare: Square) {
         self[destinationSquare] = piece
     }
 

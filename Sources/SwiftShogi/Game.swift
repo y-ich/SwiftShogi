@@ -60,6 +60,8 @@ extension Game {
         case kingPieceIsChecked
         case pieceAlreadyPromoted
         case deadPiece
+        case doublePawns
+        case droppedPawnCheckmates
     }
 
     /// Validates `move`.
@@ -67,6 +69,11 @@ extension Game {
         var result = validateSource(move.source, piece: move.piece)
         result = result.flatMap {
             validateDestination(move.destination)
+        }
+        if move.source == .capturedPiece && move.piece.kind == .pawn(.normal) {
+            result = result.flatMap {
+                validateDropPawn(move.destination)
+            }
         }
         if move.shouldPromote {
             result = result.flatMap {
@@ -105,7 +112,7 @@ extension Game {
         return result
     }
 
-    // なんちゃって指し手生成。反則手を含む
+    // なんちゃって指し手生成用バリデーション。反則手を含む
     public func validateForValidMoves(_ move: Move) -> Result<Void, MoveValidationError> {
         // var result = validateSource(move.source, piece: move.piece) sourceはvalidと保証されていると仮定
         var result: Result<Void, MoveValidationError> = .success(())
@@ -126,6 +133,11 @@ extension Game {
 
     /// Returns the valid moves for the current color.
     public func validMoves() -> [Move] {
+        [movesFromBoard, movesFromCapturedPieces].joined().filter { isValid(for: $0) }
+    }
+
+    /// なんちゃって指し手生成。反則手を含む
+    public func generallyValidMoves() -> [Move] {
         [movesFromBoard, movesFromCapturedPieces].joined().filter { isValidForValidMoves(for: $0) }
     }
 
@@ -140,6 +152,13 @@ extension Game {
             }
         }()
         return moves.filter { isValid(for: $0) }
+    }
+
+    public func isCheckmated() -> Bool {
+        guard board.isKingChecked(for: color) else {
+            return false
+        }
+        return validMoves().count == 0
     }
 }
 
@@ -204,13 +223,25 @@ private extension Game {
         switch destination {
         case let .board(square):
             // If a piece at the destination does not exist, no validation is required
-            guard let piece = board[square] else { return .success(()) }
+            guard let piece = board[square] else {
+                return .success(())
+            }
 
             guard piece.color != color else {
                 return .failure(MoveValidationError.friendlyPieceAlreadyExists)
             }
             return .success(())
         }
+    }
+
+    func validateDropPawn(_ destination: Move.Destination) -> Result<Void, MoveValidationError> {
+        switch destination {
+        case let .board(square):
+            guard board.squaresOf(Piece(kind: .pawn(.normal), color: color)).first { $0.file == square.file } == nil else {
+                return .failure(MoveValidationError.doublePawns)
+            }
+        }
+        return .success(())
     }
 
     func validatePromotion(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
@@ -239,12 +270,21 @@ private extension Game {
             guard board.isAttackable(from: sourceSquare, to: destinationSquare) else {
                 return .failure(MoveValidationError.illegalAttack)
             }
-            guard !board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) else {
+            if board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) {
                 return .failure(MoveValidationError.kingPieceIsChecked)
             }
         case let (.capturedPiece, .board(destinationSquare), piece):
-            guard !board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) else {
+            if board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) {
                 return .failure(MoveValidationError.kingPieceIsChecked)
+            }
+            if piece.kind == .pawn(.normal) {
+                var game = self
+                game.remove(piece, from: source)
+                game.insert(piece, to: destination, shouldPromote: false)
+                game.color.toggle()
+                if game.isCheckmated() {
+                    return .failure(MoveValidationError.droppedPawnCheckmates)
+                }
             }
         }
         return .success(())
@@ -253,12 +293,21 @@ private extension Game {
     func validateAttackAssumingGenerated(source: Move.Source, destination: Move.Destination, piece: Piece) -> Result<Void, MoveValidationError> {
         switch (source, destination, piece) {
         case let (.board(sourceSquare), .board(destinationSquare), _):
-            guard !board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) else {
+            if board.isKingCheckedByMovingPiece(from: sourceSquare, to: destinationSquare, for: color) {
                 return .failure(MoveValidationError.kingPieceIsChecked)
             }
         case let (.capturedPiece, .board(destinationSquare), piece):
-            guard !board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) else {
+            if board.isKingCheckedByMovingPiece(piece, to: destinationSquare, for: color) {
                 return .failure(MoveValidationError.kingPieceIsChecked)
+            }
+            if piece.kind == .pawn(.normal) {
+                var game = self
+                game.remove(piece, from: source)
+                game.insert(piece, to: destination, shouldPromote: false)
+                game.color.toggle()
+                if game.isCheckmated() {
+                    return .failure(MoveValidationError.droppedPawnCheckmates)
+                }
             }
         }
         return .success(())

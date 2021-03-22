@@ -279,6 +279,50 @@ final class GameTests: XCTestCase {
         }
     }
 
+    func testValidateWithDroppedPawnCheckmatesValidationError() {
+        let king = Piece(kind: .king, color: .white)
+        let pawn1 = Piece(kind: .pawn(.normal), color: .white)
+        let gold = Piece(kind: .gold, color: .black)
+        let pawn2 = Piece(kind: .pawn(.normal), color: .black)
+        let board = Board(pieces: [
+            .b1: pawn1, .a1: king,
+            .a3: gold
+        ])
+        let game = Game(board: board, capturedPieces: [pawn2])
+
+        let move = Move(
+            source: .capturedPiece,
+            destination: .board(.a2),
+            piece: pawn2,
+            shouldPromote: false
+        )
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.droppedPawnCheckmates)
+        }
+    }
+
+    func testValidateWithdoublePawnsValidationError() {
+        let pawn = Piece(kind: .pawn(.normal), color: .black)
+        let board = Board(pieces: [.a7: pawn])
+        let game = Game(board: board, capturedPieces: [pawn])
+
+        let move = Move(
+            source: .capturedPiece,
+            destination: .board(.a2),
+            piece: pawn,
+            shouldPromote: false
+        )
+        switch game.validate(move) {
+        case .success(()):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, Game.MoveValidationError.doublePawns)
+        }
+    }
+
     func testValidateWithIllegalCapturedPiecePromotionMoveValidationError() {
         let piece = Piece(kind: .rook(.normal), color: .black)
         let game = Game(capturedPieces: [piece])
@@ -375,6 +419,15 @@ final class GameTests: XCTestCase {
             )
         }
         XCTAssertEqual(Set(game.validMoves(from: .capturedPiece, piece: piece3)), Set(expectedFromCapturedPiece))
+    }
+
+    func testIsCheckmated() {
+        let king = Piece(kind: .king, color: .white)
+        let gold = Piece(kind: .gold, color: .black)
+        let pawn = Piece(kind: .pawn(.normal), color: .black)
+        let board = Board(pieces: [.e1: king, .e2: gold, .e3: pawn])
+        let game = Game(board: board, color: .white)
+        XCTAssert(game.isCheckmated())
     }
 }
 
