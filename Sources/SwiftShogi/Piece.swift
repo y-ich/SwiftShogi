@@ -91,7 +91,7 @@ extension Piece {
 
     var attacks: Set<Attack> { Self.pieceAttacks[rawValue] }
 
-    init?(character: Character, isPromoted: Bool) {
+    public init?(character: Character, isPromoted: Bool) {
         let state: State = isPromoted ? .promoted : .normal
         switch character.lowercased() {
         case "p": self.kind = .pawn(state)
